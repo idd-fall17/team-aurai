@@ -33,9 +33,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    sourceSets { main { java.srcDirs = ['src/main/java', 'src/main/java/2'] } }
 }
 
 dependencies {
     provided 'com.google.android.things:androidthings:0.4-devpreview'
 
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
 }
