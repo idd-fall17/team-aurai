@@ -27,7 +27,7 @@ public class MotorControllerBLEProfile {
     public static BluetoothGattService createCustomService() {
         BluetoothGattService service = new BluetoothGattService(CUSTOM_SERVICE,
                 BluetoothGattService.SERVICE_TYPE_PRIMARY);
-
+//
         // Output - send the percentage or pot reading that you want the window to go to
         BluetoothGattCharacteristic posSend = new BluetoothGattCharacteristic(POSITION,
                 //write characteristic,
