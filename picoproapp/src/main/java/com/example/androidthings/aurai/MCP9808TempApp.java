@@ -1,4 +1,4 @@
-package com.example.androidthings.myproject;
+package com.example.androidthings.aurai;
 
 /**
  * Created by Ashis on 10/7/2017.

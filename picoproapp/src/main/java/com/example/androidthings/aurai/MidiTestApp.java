@@ -1,4 +1,4 @@
-package com.example.androidthings.myproject;
+package com.example.androidthings.aurai;
 
 import edu.berkeley.idd.utils.SerialMidi;
 

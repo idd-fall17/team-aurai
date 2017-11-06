@@ -1,4 +1,4 @@
-package com.example.androidthings.myproject;
+package com.example.androidthings.aurai;
 
 /**
  * AnalogRead example for the Pico Pro.

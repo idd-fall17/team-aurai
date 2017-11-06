@@ -1,7 +1,6 @@
-package com.example.androidthings.myproject;
+package com.example.androidthings.aurai;
 
 import android.app.Activity;
-import android.os.SystemClock;
 import android.util.Log;
 import android.widget.EditText;
 

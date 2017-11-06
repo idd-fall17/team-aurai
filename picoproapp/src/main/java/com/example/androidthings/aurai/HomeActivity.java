@@ -1,4 +1,4 @@
-package com.example.androidthings.myproject;
+package com.example.androidthings.aurai;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -22,7 +22,9 @@ import android.os.Bundle;
 import android.os.ParcelUuid;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 /**
  * Created by MichaelOudenhoven on 11/3/17.
@@ -67,7 +69,7 @@ public class HomeActivity extends Activity {
         // IDD: SET A CUSTOM DEVICE NAME - is iMX7 by default
         // @see https://stackoverflow.com/questions/8377558/change-the-android-bluetooth-device-name
         // No more than 8 characters or advertising will fail (" LE Advertise Failed: 1")
-        bluetoothAdapter.setName("Aurai Pico");
+        bluetoothAdapter.setName("Aurai");
 
         // Register for system Bluetooth events
         IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
@@ -80,6 +82,16 @@ public class HomeActivity extends Activity {
             startAdvertising();
             startServer();
         }
+
+        /* Setup button click for BLE setup screen */
+        Button BLESetupButton = (Button) findViewById(R.id.BLESetup);
+        BLESetupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
     }
 
 
@@ -245,22 +257,7 @@ public class HomeActivity extends Activity {
         @Override
         public void onCharacteristicWriteRequest(BluetoothDevice device, int requestId, BluetoothGattCharacteristic characteristic, boolean preparedWrite, boolean responseNeeded, int offset, byte[] value) {
 
-            if (MotorControllerBLEProfile.OPEN_CLOSE.equals(characteristic.getUuid())) {
-                Log.i(TAG, "Write Output Characteristic");
-
-                MotorControllerBLEProfile.setWindowDirection(value);
-
-                if (responseNeeded) {
-                    mBluetoothGattServer.sendResponse(device,
-                            requestId,
-                            BluetoothGatt.GATT_SUCCESS,
-                            0,
-                            value);
-                }
-
-            }
-
-            else if (MotorControllerBLEProfile.SEND_POSITION.equals(characteristic.getUuid())) {
+            if (MotorControllerBLEProfile.POSITION.equals(characteristic.getUuid())) {
                 Log.i(TAG, "Write Output Characteristic");
 
 
@@ -284,24 +281,24 @@ public class HomeActivity extends Activity {
         public void onCharacteristicReadRequest(BluetoothDevice device, int requestId, int offset,
                                                 BluetoothGattCharacteristic characteristic) {
 
-            if (MotorControllerBLEProfile.POSITION_FEEDBACK.equals(characteristic.getUuid())) {
-                Log.i(TAG, "Read Input Characteristic");
+//            if (MotorControllerBLEProfile.POSITION_FEEDBACK.equals(characteristic.getUuid())) {
+//                Log.i(TAG, "Read Input Characteristic");
+////                mBluetoothGattServer.sendResponse(device,
+////                        requestId,
+////                        BluetoothGatt.GATT_SUCCESS,
+////                        0,
+////                        MotorControllerBLEProfile.getInputValue());
+//            }
+//
+//            else {
+//                // Invalid characteristic
+//                Log.w(TAG, "Invalid Characteristic Read: " + characteristic.getUuid());
 //                mBluetoothGattServer.sendResponse(device,
 //                        requestId,
-//                        BluetoothGatt.GATT_SUCCESS,
+//                        BluetoothGatt.GATT_FAILURE,
 //                        0,
-//                        MotorControllerBLEProfile.getInputValue());
-            }
-
-            else {
-                // Invalid characteristic
-                Log.w(TAG, "Invalid Characteristic Read: " + characteristic.getUuid());
-                mBluetoothGattServer.sendResponse(device,
-                        requestId,
-                        BluetoothGatt.GATT_FAILURE,
-                        0,
-                        null);
-            }
+//                        null);
+//            }
         }
     };
 }

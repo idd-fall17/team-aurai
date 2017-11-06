@@ -1,4 +1,4 @@
-package com.example.androidthings.myproject;
+package com.example.androidthings.aurai;
 
 import android.os.SystemClock;
 import android.util.Log;

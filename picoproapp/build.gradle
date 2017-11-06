@@ -18,10 +18,10 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
-        applicationId "com.example.androidthings.myproject"
+        applicationId "com.example.androidthings.aurai"
         minSdkVersion 24
         targetSdkVersion 25
         versionCode 1

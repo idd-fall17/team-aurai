@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package com.example.androidthings.myproject;
+package com.example.androidthings.aurai;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.widget.EditText;
 
 import com.google.android.things.pio.PeripheralManagerService;
 
