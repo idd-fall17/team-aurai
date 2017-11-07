@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattServer;
 import android.bluetooth.BluetoothGattServerCallback;
+import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.bluetooth.le.AdvertiseCallback;
@@ -26,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.example.android.bluetoothlegatt.BluetoothLeService;
 import com.example.android.bluetoothlegatt.DeviceControlActivity;
 import com.example.android.bluetoothlegatt.DeviceScanActivity;
 
@@ -87,7 +89,7 @@ public class HomeActivity extends Activity {
         }
 
         /* Setup button click for BLE setup screen */
-        Button BLESetupButton = (Button) findViewById(R.id.BLESetup);
+        final Button BLESetupButton = (Button) findViewById(R.id.BLESetup);
         BLESetupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -97,6 +99,40 @@ public class HomeActivity extends Activity {
             }
         });
 
+
+
+
+
+        /* Setup button click for closing window */
+        Button closeButton = (Button) findViewById(R.id.close);
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                boolean success = writeCharacteristic(0);
+
+                if (!success) {
+                    Log.d(TAG, "characteristic did not write to close the window");
+                }
+
+
+            }
+        });
+
+        /* Setup button click for opening window */
+        Button openButton = (Button) findViewById(R.id.open);
+        openButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                boolean success = writeCharacteristic(100);
+
+                if (!success) {
+                    Log.d(TAG, "characteristic did not write to open the window");
+                }
+
+            }
+        });
     }
 
 
@@ -306,4 +342,39 @@ public class HomeActivity extends Activity {
 //            }
         }
     };
+
+
+    /**
+     * Takes a given integer window position and writes the value to the feather using BLE GATT service.
+     *
+     * @param position 0-100 int value of the window position
+     * @return true if successfully wrote characteristic, false if failure
+     */
+    public boolean writeCharacteristic(int position) {
+
+        BluetoothGatt mBluetoothGatt = Constants.getmBluetoothGatt();
+
+        //check mBluetoothGatt is available
+        if (mBluetoothGatt == null) {
+            Log.e(TAG, "lost connection");
+            return false;
+        }
+        BluetoothGattService Service = mBluetoothGatt.getService(Constants.CUSTOM_SERVICE);
+        if (Service == null) {
+            Log.e(TAG, "service not found!");
+            return false;
+        }
+        BluetoothGattCharacteristic charac = Service.getCharacteristic(Constants.POSITION);
+        if (charac == null) {
+            Log.e(TAG, "position characteristic not found!");
+            return false;
+        }
+
+        byte[] value = new byte[1];
+        value[0] = (byte) position;
+        charac.setValue(value);
+        boolean status = mBluetoothGatt.writeCharacteristic(charac);
+        return status;
+
+    }
 }

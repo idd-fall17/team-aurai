@@ -37,6 +37,7 @@ import android.widget.TextView;
 
 import 	android.support.v7.app.AppCompatActivity;
 
+import com.example.androidthings.aurai.Constants;
 import com.example.androidthings.aurai.R;
 
 import java.util.ArrayList;
