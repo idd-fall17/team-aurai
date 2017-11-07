@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.android.bluetoothlegatt.DeviceControlActivity;
+import com.example.android.bluetoothlegatt.DeviceScanActivity;
 
 /**
  * Created by MichaelOudenhoven on 11/3/17.
@@ -90,7 +91,7 @@ public class HomeActivity extends Activity {
         BLESetupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent myIntent = new Intent(HomeActivity.this, DeviceControlActivity.class);
+                Intent myIntent = new Intent(HomeActivity.this, DeviceScanActivity.class);
                 myIntent.putExtra("key", "myString"); //Optional parameters
                 HomeActivity.this.startActivity(myIntent);
             }

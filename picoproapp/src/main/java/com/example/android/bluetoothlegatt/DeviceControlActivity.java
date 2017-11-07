@@ -35,6 +35,8 @@ import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 
+import 	android.support.v7.app.AppCompatActivity;
+
 import com.example.androidthings.aurai.R;
 
 import java.util.ArrayList;
@@ -157,11 +159,11 @@ public class DeviceControlActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Intent intent = getIntent();
-        String value = intent.getStringExtra("key"); //if it's a string you stored.
         setContentView(R.layout.gatt_services_characteristics);
 
-//        final Intent intent = getIntent();
+        final Intent intent = getIntent();
+//        Intent intent = getIntent();
+        String value = intent.getStringExtra("key"); //if it's a string you stored.
         mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
         mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
 
@@ -226,7 +228,6 @@ public class DeviceControlActivity extends Activity {
             case android.R.id.home:
                 onBackPressed();
                 return true;
-//                return false;
         }
         return super.onOptionsItemSelected(item);
     }
