@@ -80,16 +80,7 @@ public class DeviceScanActivity extends ListActivity {
             finish();
             return;
         }
-        /* Setup button click for BLE setup screen */
-
-//        Button Exit = (Button) findViewById(R.id.Exit);
-//        Exit.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                activity.finish();
-//            }
-//        });
-
+        
     }
 
     @Override
