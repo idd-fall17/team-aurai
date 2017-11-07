@@ -32,10 +32,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.androidthings.aurai.HomeActivity;
 import com.example.androidthings.aurai.R;
 
 import java.util.ArrayList;
@@ -78,6 +80,16 @@ public class DeviceScanActivity extends ListActivity {
             finish();
             return;
         }
+        /* Setup button click for BLE setup screen */
+
+//        Button Exit = (Button) findViewById(R.id.Exit);
+//        Exit.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                activity.finish();
+//            }
+//        });
+
     }
 
     @Override
@@ -98,6 +110,7 @@ public class DeviceScanActivity extends ListActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        final Activity activity = this;
         switch (item.getItemId()) {
             case R.id.menu_scan:
                 mLeDeviceListAdapter.clear();
@@ -106,6 +119,8 @@ public class DeviceScanActivity extends ListActivity {
             case R.id.menu_stop:
                 scanLeDevice(false);
                 break;
+            case R.id.Exit:
+                activity.finish();
         }
         return true;
     }
