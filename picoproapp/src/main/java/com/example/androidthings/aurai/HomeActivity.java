@@ -31,6 +31,10 @@ import com.example.android.bluetoothlegatt.BluetoothLeService;
 import com.example.android.bluetoothlegatt.DeviceControlActivity;
 import com.example.android.bluetoothlegatt.DeviceScanActivity;
 
+import java.util.List;
+
+import static com.example.android.bluetoothlegatt.BluetoothLeService.EXTRA_DATA;
+
 /**
  * Created by MichaelOudenhoven on 11/3/17.
  */
@@ -64,29 +68,29 @@ public class HomeActivity extends Activity {
 
 
         /* Set up bluetooth */
-        mBluetoothManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
-        BluetoothAdapter bluetoothAdapter = mBluetoothManager.getAdapter();
-        // We can't continue without proper Bluetooth support
-        if (!checkBluetoothSupport(bluetoothAdapter)) {
-            finish();
-        }
-
-        // IDD: SET A CUSTOM DEVICE NAME - is iMX7 by default
-        // @see https://stackoverflow.com/questions/8377558/change-the-android-bluetooth-device-name
-        // No more than 8 characters or advertising will fail (" LE Advertise Failed: 1")
-        bluetoothAdapter.setName("Aurai");
-
-        // Register for system Bluetooth events
-        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-        registerReceiver(mBluetoothReceiver, filter);
-        if (!bluetoothAdapter.isEnabled()) {
-            Log.d(TAG, "Bluetooth is currently disabled...enabling");
-            bluetoothAdapter.enable();
-        } else {
-            Log.d(TAG, "Bluetooth enabled...starting services");
-            startAdvertising();
-            startServer();
-        }
+//        mBluetoothManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
+//        BluetoothAdapter bluetoothAdapter = mBluetoothManager.getAdapter();
+//        // We can't continue without proper Bluetooth support
+//        if (!checkBluetoothSupport(bluetoothAdapter)) {
+//            finish();
+//        }
+//
+//        // IDD: SET A CUSTOM DEVICE NAME - is iMX7 by default
+//        // @see https://stackoverflow.com/questions/8377558/change-the-android-bluetooth-device-name
+//        // No more than 8 characters or advertising will fail (" LE Advertise Failed: 1")
+//        bluetoothAdapter.setName("Aurai");
+//
+//        // Register for system Bluetooth events
+//        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+//        registerReceiver(mBluetoothReceiver, filter);
+//        if (!bluetoothAdapter.isEnabled()) {
+//            Log.d(TAG, "Bluetooth is currently disabled...enabling");
+//            bluetoothAdapter.enable();
+//        } else {
+//            Log.d(TAG, "Bluetooth enabled...starting services");
+//            startAdvertising();
+//            startServer();
+//        }
 
         /* Setup button click for BLE setup screen */
         final Button BLESetupButton = (Button) findViewById(R.id.BLESetup);
@@ -352,14 +356,26 @@ public class HomeActivity extends Activity {
      */
     public boolean writeCharacteristic(int position) {
 
-        BluetoothGatt mBluetoothGatt = Constants.getmBluetoothGatt();
+        BluetoothGatt mBluetoothGatt = Constants.getmBluetoothLeService().getmBluetoothGatt();
 
         //check mBluetoothGatt is available
         if (mBluetoothGatt == null) {
-            Log.e(TAG, "lost connection");
+            Log.e(TAG, "lost connection - bluetooth GATT is null in writeCharacteristic()");
             return false;
         }
+
+
+        //TODO:
+        List<BluetoothGattService> list = Constants.getmBluetoothLeService().getSupportedGattServices();
+        Log.d(TAG, list.toString());
+
+
+
+
+
+
         BluetoothGattService Service = mBluetoothGatt.getService(Constants.CUSTOM_SERVICE);
+//        BluetoothGattService Service = mBluetoothGatt.getService(Constants.CUSTOM_SERVICE);
         if (Service == null) {
             Log.e(TAG, "service not found!");
             return false;

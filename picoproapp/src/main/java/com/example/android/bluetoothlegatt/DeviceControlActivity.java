@@ -69,7 +69,6 @@ public class DeviceControlActivity extends Activity {
 
     private final String LIST_NAME = "NAME";
     private final String LIST_UUID = "UUID";
-
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
 
@@ -82,11 +81,17 @@ public class DeviceControlActivity extends Activity {
             }
             // Automatically connects to the device upon successful start-up initialization.
             mBluetoothLeService.connect(mDeviceAddress);
+
+            //TODO:
+            Constants.setmBluetoothLeService(mBluetoothLeService);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             mBluetoothLeService = null;
+
+            //TODO:
+            Constants.setmBluetoothLeService(null);
         }
     };
 
@@ -267,6 +272,7 @@ public class DeviceControlActivity extends Activity {
             uuid = gattService.getUuid().toString();
             currentServiceData.put(
                     LIST_NAME, SampleGattAttributes.lookup(uuid, unknownServiceString));
+
             currentServiceData.put(LIST_UUID, uuid);
             gattServiceData.add(currentServiceData);
 
