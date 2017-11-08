@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattServer;
 import android.bluetooth.BluetoothGattServerCallback;
+import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.bluetooth.le.AdvertiseCallback;
@@ -26,8 +27,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.example.android.bluetoothlegatt.BluetoothLeService;
 import com.example.android.bluetoothlegatt.DeviceControlActivity;
 import com.example.android.bluetoothlegatt.DeviceScanActivity;
+
+import java.util.List;
+
+import static com.example.android.bluetoothlegatt.BluetoothLeService.EXTRA_DATA;
 
 /**
  * Created by MichaelOudenhoven on 11/3/17.
@@ -62,32 +68,32 @@ public class HomeActivity extends Activity {
 
 
         /* Set up bluetooth */
-        mBluetoothManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
-        BluetoothAdapter bluetoothAdapter = mBluetoothManager.getAdapter();
-        // We can't continue without proper Bluetooth support
-        if (!checkBluetoothSupport(bluetoothAdapter)) {
-            finish();
-        }
-
-        // IDD: SET A CUSTOM DEVICE NAME - is iMX7 by default
-        // @see https://stackoverflow.com/questions/8377558/change-the-android-bluetooth-device-name
-        // No more than 8 characters or advertising will fail (" LE Advertise Failed: 1")
-        bluetoothAdapter.setName("Aurai");
-
-        // Register for system Bluetooth events
-        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-        registerReceiver(mBluetoothReceiver, filter);
-        if (!bluetoothAdapter.isEnabled()) {
-            Log.d(TAG, "Bluetooth is currently disabled...enabling");
-            bluetoothAdapter.enable();
-        } else {
-            Log.d(TAG, "Bluetooth enabled...starting services");
-            startAdvertising();
-            startServer();
-        }
+//        mBluetoothManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
+//        BluetoothAdapter bluetoothAdapter = mBluetoothManager.getAdapter();
+//        // We can't continue without proper Bluetooth support
+//        if (!checkBluetoothSupport(bluetoothAdapter)) {
+//            finish();
+//        }
+//
+//        // IDD: SET A CUSTOM DEVICE NAME - is iMX7 by default
+//        // @see https://stackoverflow.com/questions/8377558/change-the-android-bluetooth-device-name
+//        // No more than 8 characters or advertising will fail (" LE Advertise Failed: 1")
+//        bluetoothAdapter.setName("Aurai");
+//
+//        // Register for system Bluetooth events
+//        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+//        registerReceiver(mBluetoothReceiver, filter);
+//        if (!bluetoothAdapter.isEnabled()) {
+//            Log.d(TAG, "Bluetooth is currently disabled...enabling");
+//            bluetoothAdapter.enable();
+//        } else {
+//            Log.d(TAG, "Bluetooth enabled...starting services");
+//            startAdvertising();
+//            startServer();
+//        }
 
         /* Setup button click for BLE setup screen */
-        Button BLESetupButton = (Button) findViewById(R.id.BLESetup);
+        final Button BLESetupButton = (Button) findViewById(R.id.BLESetup);
         BLESetupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -97,6 +103,40 @@ public class HomeActivity extends Activity {
             }
         });
 
+
+
+
+
+        /* Setup button click for closing window */
+        Button closeButton = (Button) findViewById(R.id.close);
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                boolean success = writeCharacteristic(0);
+
+                if (!success) {
+                    Log.d(TAG, "characteristic did not write to close the window");
+                }
+
+
+            }
+        });
+
+        /* Setup button click for opening window */
+        Button openButton = (Button) findViewById(R.id.open);
+        openButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                boolean success = writeCharacteristic(100);
+
+                if (!success) {
+                    Log.d(TAG, "characteristic did not write to open the window");
+                }
+
+            }
+        });
     }
 
 
@@ -306,4 +346,51 @@ public class HomeActivity extends Activity {
 //            }
         }
     };
+
+
+    /**
+     * Takes a given integer window position and writes the value to the feather using BLE GATT service.
+     *
+     * @param position 0-100 int value of the window position
+     * @return true if successfully wrote characteristic, false if failure
+     */
+    public boolean writeCharacteristic(int position) {
+
+        BluetoothGatt mBluetoothGatt = Constants.getmBluetoothLeService().getmBluetoothGatt();
+
+        //check mBluetoothGatt is available
+        if (mBluetoothGatt == null) {
+            Log.e(TAG, "lost connection - bluetooth GATT is null in writeCharacteristic()");
+            return false;
+        }
+
+
+        //TODO:
+        List<BluetoothGattService> list = Constants.getmBluetoothLeService().getSupportedGattServices();
+        Log.d(TAG, list.toString());
+
+
+
+
+
+
+        BluetoothGattService Service = mBluetoothGatt.getService(Constants.CUSTOM_SERVICE);
+//        BluetoothGattService Service = mBluetoothGatt.getService(Constants.CUSTOM_SERVICE);
+        if (Service == null) {
+            Log.e(TAG, "service not found!");
+            return false;
+        }
+        BluetoothGattCharacteristic charac = Service.getCharacteristic(Constants.POSITION);
+        if (charac == null) {
+            Log.e(TAG, "position characteristic not found!");
+            return false;
+        }
+
+        byte[] value = new byte[1];
+        value[0] = (byte) position;
+        charac.setValue(value);
+        boolean status = mBluetoothGatt.writeCharacteristic(charac);
+        return status;
+
+    }
 }

@@ -16,8 +16,8 @@ public class MotorControllerBLEProfile {
     public static int windowPos = 0;
 
     /* UUID's for each action */
-    public static UUID CUSTOM_SERVICE = UUID.fromString("20ff77b5-75c2-45b2-851d-b42b041d35c3");
-    public static UUID POSITION = UUID.fromString("199b4278-8c07-4e71-bd0d-7f4e1fd576d2");
+    public static UUID CUSTOM_SERVICE = Constants.CUSTOM_SERVICE;
+    public static UUID POSITION = Constants.POSITION;
 
 
     /**
