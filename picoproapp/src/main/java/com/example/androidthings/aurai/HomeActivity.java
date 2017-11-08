@@ -197,6 +197,7 @@ public class HomeActivity extends Activity {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        Log.e( TAG ,error.toString());
                         TextView tv = findViewById(R.id.sensor_data_text);
                         tv.setText("That didn't work!");
                     }
