@@ -140,7 +140,7 @@ public class HomeActivity extends Activity {
             @Override
             public void onClick(View view) {
 
-                boolean success = writeCharacteristic(0);
+                boolean success = writeCharacteristic(Constants.closed);
 
                 if (!success) {
                     Log.d(TAG, "characteristic did not write to close the window");
@@ -156,7 +156,7 @@ public class HomeActivity extends Activity {
             @Override
             public void onClick(View view) {
 
-                boolean success = writeCharacteristic(100);
+                boolean success = writeCharacteristic(Constants.open);
 
                 if (!success) {
                     Log.d(TAG, "characteristic did not write to open the window");
