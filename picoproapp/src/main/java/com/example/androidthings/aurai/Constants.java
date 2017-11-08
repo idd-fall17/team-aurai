@@ -23,6 +23,10 @@ public class Constants {
     public static UUID HRM = UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb");
 
 
+    /*Positions for window proto 2 */
+    public static int open = 1;
+    public static int closed = 0;
+
     public static BluetoothGatt getmBluetoothGatt() {
         return mBluetoothGatt;
     }
