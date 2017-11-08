@@ -21,17 +21,42 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.ParcelUuid;
+import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import com.example.android.bluetoothlegatt.BluetoothLeService;
 import com.example.android.bluetoothlegatt.DeviceControlActivity;
 import com.example.android.bluetoothlegatt.DeviceScanActivity;
 
+import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.Authenticator;
+import java.net.HttpURLConnection;
+
+import java.net.PasswordAuthentication;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.example.android.bluetoothlegatt.BluetoothLeService.EXTRA_DATA;
 
@@ -134,6 +159,50 @@ public class HomeActivity extends Activity {
                 if (!success) {
                     Log.d(TAG, "characteristic did not write to open the window");
                 }
+
+            }
+        });
+
+        Button sensorReadingButton = (Button) findViewById(R.id.sensor_data);
+        sensorReadingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                try {
+//                    URL url = new URL("http://aurai-web.herokuapp.com/api/sensorreadings/?format=json");
+//                    URLConnection uc = url.openConnection();
+//                    String userpass = "admin:admin123";
+//                    String basicAuth = "Basic " + new String(userpass.getBytes());
+//                    uc.setRequestProperty("Authorization", basicAuth);
+//                    InputStream in = uc.getInputStream();
+//                    String theString = IOUtils.toString(in, "UTF-8");
+//                    Log.d(TAG, "onClick: "+theString);
+//                }
+//                catch (IOException e){
+//                    throw new RuntimeException(e);
+//                }
+                RequestQueue queue = Volley.newRequestQueue(HomeActivity.this);
+                String url ="http://aurai-web.herokuapp.com/api/sensorreadings/?format=json";
+
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                        new Response.Listener<String>() {
+                            TextView tv = findViewById(R.id.sensor_data_text);
+                            @Override
+                            public void onResponse(String response) {
+                                // Display the first 500 characters of the response string.
+                                tv.setText("Response is: "+ response.substring(0,500));
+                            }
+                        }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        TextView tv = findViewById(R.id.sensor_data_text);
+                        tv.setText("That didn't work!");
+                    }
+
+                });
+
+// Add the request to the RequestQueue.
+                queue.add(stringRequest);
 
             }
         });
@@ -368,6 +437,7 @@ public class HomeActivity extends Activity {
         //TODO:
         List<BluetoothGattService> list = Constants.getmBluetoothLeService().getSupportedGattServices();
         Log.d(TAG, list.toString());
+
 
 
 
