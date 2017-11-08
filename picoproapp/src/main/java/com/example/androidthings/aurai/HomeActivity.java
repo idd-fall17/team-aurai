@@ -30,8 +30,11 @@ import android.widget.Button;
 import com.example.android.bluetoothlegatt.BluetoothLeService;
 import com.example.android.bluetoothlegatt.DeviceControlActivity;
 import com.example.android.bluetoothlegatt.DeviceScanActivity;
+import com.example.android.bluetoothlegatt.SampleGattAttributes;
 
+import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.UUID;
 
 import static com.example.android.bluetoothlegatt.BluetoothLeService.EXTRA_DATA;
 
@@ -68,29 +71,29 @@ public class HomeActivity extends Activity {
 
 
         /* Set up bluetooth */
-//        mBluetoothManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
-//        BluetoothAdapter bluetoothAdapter = mBluetoothManager.getAdapter();
-//        // We can't continue without proper Bluetooth support
-//        if (!checkBluetoothSupport(bluetoothAdapter)) {
-//            finish();
-//        }
-//
-//        // IDD: SET A CUSTOM DEVICE NAME - is iMX7 by default
-//        // @see https://stackoverflow.com/questions/8377558/change-the-android-bluetooth-device-name
-//        // No more than 8 characters or advertising will fail (" LE Advertise Failed: 1")
-//        bluetoothAdapter.setName("Aurai");
-//
-//        // Register for system Bluetooth events
-//        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-//        registerReceiver(mBluetoothReceiver, filter);
-//        if (!bluetoothAdapter.isEnabled()) {
-//            Log.d(TAG, "Bluetooth is currently disabled...enabling");
-//            bluetoothAdapter.enable();
-//        } else {
-//            Log.d(TAG, "Bluetooth enabled...starting services");
-//            startAdvertising();
-//            startServer();
-//        }
+        mBluetoothManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
+        BluetoothAdapter bluetoothAdapter = mBluetoothManager.getAdapter();
+        // We can't continue without proper Bluetooth support
+        if (!checkBluetoothSupport(bluetoothAdapter)) {
+            finish();
+        }
+
+        // IDD: SET A CUSTOM DEVICE NAME - is iMX7 by default
+        // @see https://stackoverflow.com/questions/8377558/change-the-android-bluetooth-device-name
+        // No more than 8 characters or advertising will fail (" LE Advertise Failed: 1")
+        bluetoothAdapter.setName("Aurai");
+
+        // Register for system Bluetooth events
+        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+        registerReceiver(mBluetoothReceiver, filter);
+        if (!bluetoothAdapter.isEnabled()) {
+            Log.d(TAG, "Bluetooth is currently disabled...enabling");
+            bluetoothAdapter.enable();
+        } else {
+            Log.d(TAG, "Bluetooth enabled...starting services");
+            startAdvertising();
+            startServer();
+        }
 
         /* Setup button click for BLE setup screen */
         final Button BLESetupButton = (Button) findViewById(R.id.BLESetup);
@@ -326,6 +329,17 @@ public class HomeActivity extends Activity {
         public void onCharacteristicReadRequest(BluetoothDevice device, int requestId, int offset,
                                                 BluetoothGattCharacteristic characteristic) {
 
+            Log.d(TAG, "onCharacteristicReadRequest Called");
+            if (characteristic.getUuid().toString() == SampleGattAttributes.HEART_RATE_MEASUREMENT) {
+                Log.d(TAG, "onCharacteristicReadRequest got HRM charactertistic");
+
+                String x = new String(characteristic.getValue());
+                 Log.d(TAG, "characteristic value: " + x);
+
+            }
+
+            Log.d(TAG, "onCharacteristicReadRequest and didnt get HRM UUID");
+
 //            if (MotorControllerBLEProfile.POSITION_FEEDBACK.equals(characteristic.getUuid())) {
 //                Log.i(TAG, "Read Input Characteristic");
 ////                mBluetoothGattServer.sendResponse(device,
@@ -358,6 +372,7 @@ public class HomeActivity extends Activity {
 
         BluetoothGatt mBluetoothGatt = Constants.getmBluetoothLeService().getmBluetoothGatt();
 
+
         //check mBluetoothGatt is available
         if (mBluetoothGatt == null) {
             Log.e(TAG, "lost connection - bluetooth GATT is null in writeCharacteristic()");
@@ -369,26 +384,48 @@ public class HomeActivity extends Activity {
         List<BluetoothGattService> list = Constants.getmBluetoothLeService().getSupportedGattServices();
         Log.d(TAG, list.toString());
 
+        BluetoothGattService heartService = null;
 
+        for(int i = 0; i< list.size(); i++){
+            Log.d(TAG, list.get(i).getUuid().toString());
 
+            if (list.get(i).getUuid().toString() == Constants.CUSTOM_SERVICE.toString()) {
+                Log.d(TAG, "heart rate service detected");
+                heartService = list.get(i);
+                break;
+            }
+        }
 
+        heartService = mBluetoothGatt.getService(Constants.CUSTOM_SERVICE);
 
-
-        BluetoothGattService Service = mBluetoothGatt.getService(Constants.CUSTOM_SERVICE);
-//        BluetoothGattService Service = mBluetoothGatt.getService(Constants.CUSTOM_SERVICE);
-        if (Service == null) {
+        if (heartService == null) {
             Log.e(TAG, "service not found!");
             return false;
         }
-        BluetoothGattCharacteristic charac = Service.getCharacteristic(Constants.POSITION);
+
+
+//        BluetoothGattService Service = mBluetoothGatt.getService(Constants.CUSTOM_SERVICE);
+////        BluetoothGattService Service = mBluetoothGatt.getService(Constants.CUSTOM_SERVICE);
+//        if (Service == null) {
+//            Log.e(TAG, "service not found!");
+//            return false;
+//        }
+        BluetoothGattCharacteristic charac = heartService.getCharacteristic(Constants.POSITION);
         if (charac == null) {
             Log.e(TAG, "position characteristic not found!");
             return false;
         }
 
-        byte[] value = new byte[1];
-        value[0] = (byte) position;
-        charac.setValue(value);
+
+
+        mBluetoothGatt.setCharacteristicNotification(charac, true);
+
+        byte[] value =  Integer.toHexString(position).getBytes();
+
+        //Log.d(TAG, "Hex String: " + Integer.toHexString(position));
+
+        charac.setValue(position, BluetoothGattCharacteristic.FORMAT_UINT32, 0);
+
         boolean status = mBluetoothGatt.writeCharacteristic(charac);
         return status;
 
