@@ -34,30 +34,20 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/BLESetup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="8dp"
-        android:text="BLE Setup"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
         android:id="@+id/close"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="250dp"
+        android:layout_marginEnd="8dp"
         android:text="Close"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/open"
         app:layout_constraintTop_toTopOf="@+id/open" />
 
     <Button
         android:id="@+id/open"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="250dp"
-        android:layout_marginTop="200dp"
+        android:layout_marginEnd="60dp"
+        android:layout_marginTop="20dp"
         android:text="Open 100"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -66,20 +56,169 @@
         android:id="@+id/sensor_data"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="100dp"
-        android:layout_marginStart="64dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="20dp"
         android:text="Sensor Data"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/sensor_data_text"
         android:layout_width="559dp"
-        android:layout_height="74dp"
-        android:layout_marginBottom="16dp"
-        android:layout_marginStart="128dp"
+        android:layout_height="25dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:text="No Data"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+    <TextView
+        android:id="@+id/roomTemp2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:fontFamily="sans-serif"
+        android:text="21"
+        android:textColor="@color/cardview_light_background"
+        android:textSize="160sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/backgroundView" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="41dp"
+        android:layout_marginTop="90dp"
+        android:fontFamily="sans-serif"
+        android:text="set"
+        android:textColor="@color/cardview_light_background"
+        android:textSize="30sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/setpointTempButton" />
+
+    <Button
+        android:id="@+id/setpointTempButton"
+        style="@android:style/Widget.DeviceDefault.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
+        android:text="20"
+        android:textColor="@color/cardview_light_background"
+        android:textSize="72sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_editor_absoluteY="233dp" />
+
+    <ImageButton
+        android:id="@+id/BLESetup"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="8dp"
+        android:background="null"
+        android:scaleType="fitCenter"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/white_BT_icon" />
+
+    <ImageButton
+        android:id="@+id/downSet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:background="null"
+        app:layout_constraintBottom_toBottomOf="@+id/setpointTempButton"
+        app:layout_constraintStart_toEndOf="@+id/setpointTempButton"
+        app:layout_constraintTop_toTopOf="@+id/setpointTempButton"
+        app:layout_constraintVertical_bias="0.506"
+        app:srcCompat="@drawable/down_arrow" />
+
+    <ImageButton
+        android:id="@+id/upSet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:background="null"
+        app:layout_constraintBottom_toBottomOf="@+id/setpointTempButton"
+        app:layout_constraintEnd_toStartOf="@+id/setpointTempButton"
+        app:layout_constraintTop_toTopOf="@+id/setpointTempButton"
+        app:layout_constraintVertical_bias="0.506"
+        app:srcCompat="@drawable/up_arrow" />
+
+    <ImageButton
+        android:id="@+id/windowButton"
+        android:layout_width="50"
+        android:layout_height="80"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="null"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="@+id/setpointTempButton"
+        app:layout_constraintEnd_toEndOf="@+id/upSet"
+        app:layout_constraintHorizontal_bias="0.6"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/setpointTempButton"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/window_icon" />
+
+    <ImageButton
+        android:id="@+id/leftActivityButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:background="null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/backgroundView"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/left_arrow" />
+
+    <ImageButton
+        android:id="@+id/rightActivityButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:background="null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/backgroundView"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/right_arrow" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="sans-serif"
+        android:text="22"
+        android:textColor="@color/cardview_light_background"
+        android:textSize="72sp"
+        app:layout_constraintBottom_toBottomOf="@+id/setpointTempButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.4"
+        app:layout_constraintStart_toStartOf="@+id/downSet"
+        app:layout_constraintTop_toTopOf="@+id/setpointTempButton" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="85dp"
+        app:layout_constraintEnd_toEndOf="@+id/textView6"
+        app:layout_constraintStart_toStartOf="@+id/textView6"
+        app:layout_constraintTop_toTopOf="@+id/textView6"
+        app:srcCompat="@drawable/rain_cloud" />
 
 </android.support.constraint.ConstraintLayout>
