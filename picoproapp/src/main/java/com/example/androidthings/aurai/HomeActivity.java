@@ -27,6 +27,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
@@ -74,8 +75,17 @@ public class HomeActivity extends Activity {
     private BluetoothGattServer mBluetoothGattServer;
     private BluetoothLeAdvertiser mBluetoothLeAdvertiser;
 
+    //image buttons to hide and unhide when user trying to change the set point
+    private ImageButton upSetButton;
+    private ImageButton downSetButton;
+    private Button setTempButton;
+    //boolean to control when the setpoint arrows should be shown or not
+    private boolean settingTemp = false;
+    //temperature the room is set to
+    private int setPointTemp = 20;
 
 
+    //LIFECYCLE METHODS
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,96 +129,25 @@ public class HomeActivity extends Activity {
             startServer();
         }
 
-        /* Setup button click for BLE setup screen */
-        final Button BLESetupButton = (Button) findViewById(R.id.BLESetup);
-        BLESetupButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent myIntent = new Intent(HomeActivity.this, DeviceScanActivity.class);
-                myIntent.putExtra("key", "myString"); //Optional parameters
-                HomeActivity.this.startActivity(myIntent);
-            }
-        });
+        //setup buttons onclick listeners
+        setupButtons();
+
+        //hide action bar from view
+        getActionBar().hide();
 
 
 
+        //TODO: call to server to get stored setpoint temperature for the room and load it into the button text
 
 
-        /* Setup button click for closing window */
-        Button closeButton = (Button) findViewById(R.id.close);
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                boolean success = writeCharacteristic(Constants.closed);
-
-                if (!success) {
-                    Log.d(TAG, "characteristic did not write to close the window");
-                }
+        //hide setpoint adjustment on launch
+        upSetButton.setVisibility(View.INVISIBLE);
+        downSetButton.setVisibility(View.INVISIBLE);
+        settingTemp = false;
 
 
-            }
-        });
+        //TODO: make slider for window adjustment on home view hidden
 
-        /* Setup button click for opening window */
-        Button openButton = (Button) findViewById(R.id.open);
-        openButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                boolean success = writeCharacteristic(Constants.open);
-
-                if (!success) {
-                    Log.d(TAG, "characteristic did not write to open the window");
-                }
-
-            }
-        });
-
-        Button sensorReadingButton = (Button) findViewById(R.id.sensor_data);
-        sensorReadingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                try {
-//                    URL url = new URL("http://aurai-web.herokuapp.com/api/sensorreadings/?format=json");
-//                    URLConnection uc = url.openConnection();
-//                    String userpass = "admin:admin123";
-//                    String basicAuth = "Basic " + new String(userpass.getBytes());
-//                    uc.setRequestProperty("Authorization", basicAuth);
-//                    InputStream in = uc.getInputStream();
-//                    String theString = IOUtils.toString(in, "UTF-8");
-//                    Log.d(TAG, "onClick: "+theString);
-//                }
-//                catch (IOException e){
-//                    throw new RuntimeException(e);
-//                }
-                RequestQueue queue = Volley.newRequestQueue(HomeActivity.this);
-                String url ="http://aurai-web.herokuapp.com/api/sensorreadings/?format=json";
-
-                StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                        new Response.Listener<String>() {
-                            TextView tv = findViewById(R.id.sensor_data_text);
-                            @Override
-                            public void onResponse(String response) {
-                                // Display the first 500 characters of the response string.
-                                tv.setText("Response is: "+ response.substring(0,500));
-                            }
-                        }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e( TAG ,error.toString());
-                        TextView tv = findViewById(R.id.sensor_data_text);
-                        tv.setText("That didn't work!");
-                    }
-
-                });
-
-// Add the request to the RequestQueue.
-                queue.add(stringRequest);
-
-            }
-        });
     }
 
 
@@ -437,7 +376,7 @@ public class HomeActivity extends Activity {
      * @param position 0-100 int value of the window position
      * @return true if successfully wrote characteristic, false if failure
      */
-    public boolean writeCharacteristic(int position) {
+    private boolean writeCharacteristic(int position) {
 
         BluetoothGatt mBluetoothGatt = Constants.getmBluetoothLeService().getmBluetoothGatt();
 
@@ -452,21 +391,21 @@ public class HomeActivity extends Activity {
         List<BluetoothGattService> list = Constants.getmBluetoothLeService().getSupportedGattServices();
         Log.d(TAG, list.toString());
 
-        BluetoothGattService heartService = null;
+        BluetoothGattService customService = null;
 
         for(int i = 0; i< list.size(); i++){
             Log.d(TAG, list.get(i).getUuid().toString());
 
             if (list.get(i).getUuid().toString() == Constants.CUSTOM_SERVICE.toString()) {
                 Log.d(TAG, "heart rate service detected");
-                heartService = list.get(i);
+                customService = list.get(i);
                 break;
             }
         }
 
-        heartService = mBluetoothGatt.getService(Constants.CUSTOM_SERVICE);
+        customService = mBluetoothGatt.getService(Constants.CUSTOM_SERVICE);
 
-        if (heartService == null) {
+        if (customService == null) {
             Log.e(TAG, "service not found!");
             return false;
         }
@@ -478,7 +417,7 @@ public class HomeActivity extends Activity {
 //            Log.e(TAG, "service not found!");
 //            return false;
 //        }
-        BluetoothGattCharacteristic charac = heartService.getCharacteristic(Constants.POSITION);
+        BluetoothGattCharacteristic charac = customService.getCharacteristic(Constants.POSITION);
         if (charac == null) {
             Log.e(TAG, "position characteristic not found!");
             return false;
@@ -496,6 +435,183 @@ public class HomeActivity extends Activity {
 
         boolean status = mBluetoothGatt.writeCharacteristic(charac);
         return status;
+
+    }
+
+    private void setupButtons() {
+        /* Setup button click for BLE setup screen */
+        ImageButton BLESetupButton = (ImageButton) findViewById(R.id.BLESetup);
+        BLESetupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(HomeActivity.this, DeviceScanActivity.class);
+                myIntent.putExtra("key", "myString"); //Optional parameters
+                HomeActivity.this.startActivity(myIntent);
+            }
+        });
+
+        /* Setup button click for closing window */
+        Button closeButton = (Button) findViewById(R.id.close);
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                boolean success = writeCharacteristic(Constants.closed);
+
+                if (!success) {
+                    Log.d(TAG, "characteristic did not write to close the window");
+                }
+
+
+            }
+        });
+
+        /* Setup button click for opening window */
+        Button openButton = (Button) findViewById(R.id.open);
+        openButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                boolean success = writeCharacteristic(Constants.open);
+
+                if (!success) {
+                    Log.d(TAG, "characteristic did not write to open the window");
+                }
+
+            }
+        });
+
+        Button sensorReadingButton = (Button) findViewById(R.id.sensor_data);
+        sensorReadingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                try {
+//                    URL url = new URL("http://aurai-web.herokuapp.com/api/sensorreadings/?format=json");
+//                    URLConnection uc = url.openConnection();
+//                    String userpass = "admin:admin123";
+//                    String basicAuth = "Basic " + new String(userpass.getBytes());
+//                    uc.setRequestProperty("Authorization", basicAuth);
+//                    InputStream in = uc.getInputStream();
+//                    String theString = IOUtils.toString(in, "UTF-8");
+//                    Log.d(TAG, "onClick: "+theString);
+//                }
+//                catch (IOException e){
+//                    throw new RuntimeException(e);
+//                }
+                RequestQueue queue = Volley.newRequestQueue(HomeActivity.this);
+                String url ="http://aurai-web.herokuapp.com/api/sensorreadings/?format=json";
+
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                        new Response.Listener<String>() {
+                            TextView tv = findViewById(R.id.sensor_data_text);
+                            @Override
+                            public void onResponse(String response) {
+                                // Display the first 500 characters of the response string.
+                                tv.setText("Response is: "+ response.substring(0,500));
+                            }
+                        }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e( TAG ,error.toString());
+                        TextView tv = findViewById(R.id.sensor_data_text);
+                        tv.setText("That didn't work!");
+                    }
+
+                });
+
+                // Add the request to the RequestQueue.
+                queue.add(stringRequest);
+
+            }
+        });
+
+        //up button on temperature setpoint
+        upSetButton = (ImageButton) findViewById(R.id.upSet);
+        upSetButton.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View view) {
+                Log.d(TAG, "up setpoint clicked");
+                setPointTemp += 1;
+                setTempButton.setText(Integer.toString(setPointTemp));
+            }
+        });
+
+        //down button on temperature setpoint
+        downSetButton = (ImageButton) findViewById(R.id.downSet);
+        downSetButton.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View view) {
+                Log.d(TAG, "down setpoint clicked");
+                setPointTemp -= 1;
+                setTempButton.setText(Integer.toString(setPointTemp));
+            }
+        });
+
+        //button as the setpoint temperature to toggle the setting temperature on and off
+        //TODO: add logic to cause a timeout of setpoint if user doesn't click arrows after 3 seconds
+        setTempButton = (Button) findViewById(R.id.setpointTempButton);
+        setTempButton.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View view) {
+                Log.d(TAG, "setpoint clicked");
+
+                //if the user is setting the temp and clicks the temperature turn the arrows off
+                //b/c this is the final set temperature they want
+                if (settingTemp) {
+                    upSetButton.setVisibility(View.INVISIBLE);
+                    downSetButton.setVisibility(View.INVISIBLE);
+                    settingTemp = false;
+                }
+                //user wants to edit the temperature turn the set point arrows on
+                else {
+                    upSetButton.setVisibility(View.VISIBLE);
+                    downSetButton.setVisibility(View.VISIBLE);
+                    settingTemp = true;
+                }
+            }
+        });
+
+
+
+        //right arrow button
+        ImageButton rightArrowButton = (ImageButton) findViewById(R.id.rightActivityButton);
+        rightArrowButton.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View view) {
+                Log.d(TAG, "right arrow clicked");
+
+                //TODO: create intent to move to room view
+
+            }
+
+        });
+
+        //left arrow button
+        ImageButton leftArrowButton = (ImageButton) findViewById(R.id.leftActivityButton);
+        leftArrowButton.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View view) {
+                Log.d(TAG, "left arrow clicked");
+
+                //TODO: create intent to move to graph view
+
+            }
+
+        });
+
+        //window button
+        ImageButton windowAdjustButton = (ImageButton) findViewById(R.id.windowButton);
+        windowAdjustButton.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View view) {
+                Log.d(TAG, "window adjust clicked");
+
+                //TODO: make slider with animation appear
+            }
+
+        });
+
 
     }
 }
