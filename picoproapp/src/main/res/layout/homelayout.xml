@@ -73,10 +73,10 @@
         android:text="No Data"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/set" />
+        app:layout_constraintTop_toBottomOf="@+id/setLabelRoom" />
 
     <TextView
-        android:id="@+id/roomTemp2"
+        android:id="@+id/roomTempHome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
@@ -89,7 +89,7 @@
         app:layout_constraintTop_toTopOf="@+id/backgroundView" />
 
     <TextView
-        android:id="@+id/set"
+        android:id="@+id/setLabelRoom"
         android:layout_width="wrap_content"
         android:layout_height="41dp"
         android:layout_marginTop="90dp"
@@ -99,10 +99,10 @@
         android:textSize="30sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/setpointTempButton" />
+        app:layout_constraintTop_toTopOf="@+id/setpointTempButtonHome" />
 
     <Button
-        android:id="@+id/setpointTempButton"
+        android:id="@+id/setpointTempButtonHome"
         style="@android:style/Widget.DeviceDefault.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -135,9 +135,9 @@
         android:layout_marginTop="8dp"
         android:background="@android:color/transparent"
         android:src="@drawable/down_arrow"
-        app:layout_constraintBottom_toBottomOf="@+id/setpointTempButton"
-        app:layout_constraintStart_toEndOf="@+id/setpointTempButton"
-        app:layout_constraintTop_toTopOf="@+id/setpointTempButton"
+        app:layout_constraintBottom_toBottomOf="@+id/setpointTempButtonHome"
+        app:layout_constraintStart_toEndOf="@+id/setpointTempButtonHome"
+        app:layout_constraintTop_toTopOf="@+id/setpointTempButtonHome"
         app:layout_constraintVertical_bias="0.506" />
 
     <ImageButton
@@ -148,9 +148,9 @@
         android:layout_marginTop="8dp"
         android:background="@android:color/transparent"
         android:src="@drawable/up_arrow"
-        app:layout_constraintBottom_toBottomOf="@+id/setpointTempButton"
-        app:layout_constraintEnd_toStartOf="@+id/setpointTempButton"
-        app:layout_constraintTop_toTopOf="@+id/setpointTempButton"
+        app:layout_constraintBottom_toBottomOf="@+id/setpointTempButtonHome"
+        app:layout_constraintEnd_toStartOf="@+id/setpointTempButtonHome"
+        app:layout_constraintTop_toTopOf="@+id/setpointTempButtonHome"
         app:layout_constraintVertical_bias="0.506" />
 
     <ImageButton
@@ -164,11 +164,11 @@
         android:background="@android:color/transparent"
         android:scaleType="fitCenter"
         android:src="@drawable/window_icon"
-        app:layout_constraintBottom_toBottomOf="@+id/setpointTempButton"
+        app:layout_constraintBottom_toBottomOf="@+id/setpointTempButtonHome"
         app:layout_constraintEnd_toEndOf="@+id/upSet"
         app:layout_constraintHorizontal_bias="0.6"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/setpointTempButton"
+        app:layout_constraintTop_toTopOf="@+id/setpointTempButtonHome"
         app:layout_constraintVertical_bias="1.0" />
 
     <ImageButton
@@ -194,7 +194,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/outdoorTemp"
+        android:id="@+id/outdoorTempHome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -205,22 +205,22 @@
         android:text="22"
         android:textColor="@color/cardview_light_background"
         android:textSize="72sp"
-        app:layout_constraintBottom_toBottomOf="@+id/setpointTempButton"
+        app:layout_constraintBottom_toBottomOf="@+id/setpointTempButtonHome"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.4"
         app:layout_constraintStart_toStartOf="@+id/downSet"
-        app:layout_constraintTop_toTopOf="@+id/setpointTempButton" />
+        app:layout_constraintTop_toTopOf="@+id/setpointTempButtonHome" />
 
     <ImageView
-        android:id="@+id/weatherTypeImage"
+        android:id="@+id/weatherTypeImageHome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="85dp"
         android:src="@drawable/rain_cloud"
-        app:layout_constraintEnd_toEndOf="@+id/outdoorTemp"
-        app:layout_constraintStart_toStartOf="@+id/outdoorTemp"
-        app:layout_constraintTop_toTopOf="@+id/outdoorTemp" />
+        app:layout_constraintEnd_toEndOf="@+id/outdoorTempHome"
+        app:layout_constraintStart_toStartOf="@+id/outdoorTempHome"
+        app:layout_constraintTop_toTopOf="@+id/outdoorTempHome" />
 
 </android.support.constraint.ConstraintLayout>

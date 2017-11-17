@@ -21,7 +21,6 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.ParcelUuid;
-import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -30,38 +29,17 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import com.example.android.bluetoothlegatt.BluetoothLeService;
-import com.example.android.bluetoothlegatt.DeviceControlActivity;
 import com.example.android.bluetoothlegatt.DeviceScanActivity;
 import com.example.android.bluetoothlegatt.SampleGattAttributes;
 
-import org.apache.commons.io.IOUtils;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.Authenticator;
-import java.net.HttpURLConnection;
-
-import java.net.PasswordAuthentication;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
-import java.util.Map;
-
-import static com.example.android.bluetoothlegatt.BluetoothLeService.EXTRA_DATA;
 
 /**
  * Created by MichaelOudenhoven on 11/3/17.
@@ -550,7 +528,7 @@ public class HomeActivity extends Activity {
 
         //button as the setpoint temperature to toggle the setting temperature on and off
         //TODO: add logic to cause a timeout of setpoint if user doesn't click arrows after 3 seconds
-        setTempButton = (Button) findViewById(R.id.setpointTempButton);
+        setTempButton = (Button) findViewById(R.id.setpointTempButtonHome);
         setTempButton.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View view) {
