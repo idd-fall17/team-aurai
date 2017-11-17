@@ -133,7 +133,7 @@ public class HomeActivity extends Activity {
         setupButtons();
 
         //hide action bar from view
-        getActionBar().hide();
+        //getActionBar().hide();
 
 
 

@@ -4,12 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:theme="@android:style/Theme.Holo.NoActionBar">
 
     <ImageView
         android:id="@+id/backgroundView"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="535dp"
         android:scaleType="fitXY"
         android:src="@drawable/background_gradient"
         android:visibility="visible"
@@ -133,11 +134,11 @@
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
         android:background="@android:color/transparent"
+        android:src="@drawable/down_arrow"
         app:layout_constraintBottom_toBottomOf="@+id/setpointTempButton"
         app:layout_constraintStart_toEndOf="@+id/setpointTempButton"
         app:layout_constraintTop_toTopOf="@+id/setpointTempButton"
-        app:layout_constraintVertical_bias="0.506"
-        android:src="@drawable/down_arrow" />
+        app:layout_constraintVertical_bias="0.506" />
 
     <ImageButton
         android:id="@+id/upSet"
@@ -146,11 +147,11 @@
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
         android:background="@android:color/transparent"
+        android:src="@drawable/up_arrow"
         app:layout_constraintBottom_toBottomOf="@+id/setpointTempButton"
         app:layout_constraintEnd_toStartOf="@+id/setpointTempButton"
         app:layout_constraintTop_toTopOf="@+id/setpointTempButton"
-        app:layout_constraintVertical_bias="0.506"
-        android:src="@drawable/up_arrow" />
+        app:layout_constraintVertical_bias="0.506" />
 
     <ImageButton
         android:id="@+id/windowButton"
@@ -162,13 +163,13 @@
         android:layout_marginTop="8dp"
         android:background="@android:color/transparent"
         android:scaleType="fitCenter"
+        android:src="@drawable/window_icon"
         app:layout_constraintBottom_toBottomOf="@+id/setpointTempButton"
         app:layout_constraintEnd_toEndOf="@+id/upSet"
         app:layout_constraintHorizontal_bias="0.6"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/setpointTempButton"
-        app:layout_constraintVertical_bias="1.0"
-        android:src="@drawable/window_icon" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <ImageButton
         android:id="@+id/leftActivityButton"
@@ -176,10 +177,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:background="@android:color/transparent"
+        android:src="@drawable/left_arrow"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/backgroundView"
-        app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/left_arrow" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
         android:id="@+id/rightActivityButton"
@@ -187,10 +188,10 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:background="@android:color/transparent"
+        android:src="@drawable/right_arrow"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/backgroundView"
-        app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/right_arrow" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/outdoorTemp"
@@ -217,9 +218,9 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="85dp"
+        android:src="@drawable/rain_cloud"
         app:layout_constraintEnd_toEndOf="@+id/outdoorTemp"
         app:layout_constraintStart_toStartOf="@+id/outdoorTemp"
-        app:layout_constraintTop_toTopOf="@+id/outdoorTemp"
-        android:src="@drawable/rain_cloud" />
+        app:layout_constraintTop_toTopOf="@+id/outdoorTemp" />
 
 </android.support.constraint.ConstraintLayout>
