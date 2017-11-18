@@ -71,6 +71,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:text="No Data"
+        android:textColor="@android:color/background_dark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/setLabelRoom" />
@@ -222,5 +223,33 @@
         app:layout_constraintEnd_toEndOf="@+id/outdoorTempHome"
         app:layout_constraintStart_toStartOf="@+id/outdoorTempHome"
         app:layout_constraintTop_toTopOf="@+id/outdoorTempHome" />
+
+    <SeekBar
+        android:id="@+id/windowSeek"
+        style="@android:style/Widget.Material.SeekBar.Discrete"
+        android:layout_width="300dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="16dp"
+        android:max="10"
+        android:progress="0"
+        android:thumb="@drawable/slider_button"
+        app:layout_constraintBottom_toTopOf="@+id/windowButton"
+        app:layout_constraintEnd_toEndOf="@+id/windowButton"
+        app:layout_constraintStart_toStartOf="@+id/windowButton" />
+
+    <TextView
+        android:id="@+id/windowPercent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="0%"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textColor="@color/cardview_light_background"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/windowSeek"
+        app:layout_constraintEnd_toEndOf="@+id/windowSeek"
+        app:layout_constraintStart_toStartOf="@+id/windowSeek" />
 
 </android.support.constraint.ConstraintLayout>

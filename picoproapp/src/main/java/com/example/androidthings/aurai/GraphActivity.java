@@ -1,6 +1,7 @@
 package com.example.androidthings.aurai;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
@@ -11,6 +12,8 @@ import android.widget.Button;
 import android.widget.ImageButton;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
@@ -145,6 +148,19 @@ public class GraphActivity extends Activity {
     private void setupGraph() {
 
         //TODO: customize chart look
+        chart.getAxisRight().setDrawLabels(false);
+        chart.getAxisRight().setDrawLimitLinesBehindData(false);
+        chart.getAxisLeft().setDrawLimitLinesBehindData(false);
+        chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        chart.getXAxis().setDrawLimitLinesBehindData(false);
+        chart.getXAxis().setDrawLabels(true);
+//        chart.setDescription(new Description(""));
+//        chart.setDescription("");
+        chart.setDrawBorders(true);
+        chart.setGridBackgroundColor(Color.WHITE);
+        chart.setBorderWidth(5);
+        chart.setBorderColor(Color.WHITE);
+        
 
         //placeholder data to test chart
         int[] x = new int[]{1,2,3,4,5,6,7,8,9};
@@ -173,8 +189,14 @@ public class GraphActivity extends Activity {
 
         chartData = new LineDataSet(chartEntries1, "dataset1");
         chartData.setAxisDependency(YAxis.AxisDependency.LEFT);
+        chartData.setDrawValues(false);
+        chartData.setColor(Color.RED);
+        chartData.setCircleColor(Color.RED);
+
         LineDataSet chartData2 = new LineDataSet(chartEntries2, "dataset2");
         chartData2.setAxisDependency(YAxis.AxisDependency.LEFT);
+        chartData2.setDrawValues(false);
+
         //LineDataSet chartData3 = new LineDataSet(chartEntries3, "dataset3");
         //chartData3.setAxisDependency(YAxis.AxisDependency.LEFT);
 

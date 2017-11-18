@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -62,6 +63,10 @@ public class HomeActivity extends Activity {
     //temperature the room is set to
     private int setPointTemp = 20;
 
+    //seek bar for window position
+    private SeekBar seekBar;
+    private TextView seekBarPercent;
+    private int seekBarSetPoint = 0;
 
     //LIFECYCLE METHODS
 
@@ -120,7 +125,8 @@ public class HomeActivity extends Activity {
         settingTemp = false;
 
 
-        //TODO: make slider for window adjustment on home view hidden
+        //set up the seek bar
+        setupSeekBar();
 
     }
 
@@ -589,10 +595,81 @@ public class HomeActivity extends Activity {
                 Log.d(TAG, "window adjust clicked");
 
                 //TODO: make slider with animation appear
+
+                //if seekbar is currently not shown - show it
+                if (seekBar.getVisibility() == View.INVISIBLE) {
+                    //set to previous percentage - may have changed from bluetooth call from feather
+                    seekBarPercent.setText(Integer.toString(seekBarSetPoint)+ "%");
+
+                    //get seekbar location and set it to the correct place on the slider
+                    int seekLocation = seekBarSetPoint/10;
+                    seekBar.setProgress(seekLocation);
+
+                    //make appear on click
+                    seekBar.setVisibility(View.VISIBLE);
+                    seekBarPercent.setVisibility(View.VISIBLE);
+
+                }
+                //seek bar is currently up turn it off
+                else {
+                    seekBar.setVisibility(View.INVISIBLE);
+                    seekBarPercent.setVisibility(View.INVISIBLE);
+                }
+
             }
 
         });
 
 
+    }
+
+
+    /**
+     * Sets up the seek bar to move in 10% increments to open the windows. Includes listener methods
+     * for when the seek bar is moved.
+     */
+    private void setupSeekBar() {
+        seekBarPercent = findViewById(R.id.windowPercent);
+        //set to startup value
+        seekBarPercent.setText(Integer.toString(seekBarSetPoint)+ "%");
+
+
+        //TODO: if time customize the color of the seekbar to be more noticeable
+
+
+
+        seekBar = findViewById(R.id.windowSeek);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                //Log.d(TAG, Integer.toString(i));
+                seekBarSetPoint = i*10;
+                seekBarPercent.setText(Integer.toString(seekBarSetPoint)+ "%");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                //don't need to do anything here as of now
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+                //TODO: send bluetooth characteristic
+                //TODO: pop up view saying the window is being moved
+
+
+                //TODO: if time make timeout rather than invisible right away
+                //hide once done changing
+                seekBar.setVisibility(View.INVISIBLE);
+                seekBarPercent.setVisibility(View.INVISIBLE);
+
+            }
+        });
+
+
+        //hide on startup
+        seekBar.setVisibility(View.INVISIBLE);
+        seekBarPercent.setVisibility(View.INVISIBLE);
     }
 }

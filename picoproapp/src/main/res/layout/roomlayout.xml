@@ -156,13 +156,26 @@
         app:layout_constraintVertical_bias="0.24000001"
         android:src="@drawable/room_1_window" />
 
-    <TextView
-        android:id="@+id/percentOpen"
-        android:layout_width="wrap_content"
+    <SeekBar
+        android:id="@+id/windowSeekRoom"
+        style="@android:style/Widget.Material.SeekBar.Discrete"
+        android:layout_width="225dp"
+        android:layout_height="40dp"
+        android:max="10"
+        android:progress="0"
+        android:thumb="@drawable/slider_button"
+        app:layout_constraintBottom_toBottomOf="@+id/windowAdjustButton"
+        app:layout_constraintEnd_toStartOf="@+id/windowAdjustButton"
+        app:layout_constraintTop_toTopOf="@+id/windowAdjustButton" />
+
+    <Button
+        android:id="@+id/windowAdjustButton"
+        android:layout_width="108dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="40dp"
         android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
         android:fontFamily="sans-serif"
         android:text="0%"
         android:textColor="@color/cardview_light_background"
