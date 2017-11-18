@@ -9,17 +9,15 @@
 
 
     <ImageView
-        android:id="@+id/backgroundImage"
+        android:id="@+id/backgroundRoom"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/background_gradient" />
+        android:src="@drawable/background_gradient" />
 
     <ImageButton
         android:id="@+id/backButtonRoom"
@@ -31,7 +29,7 @@
         android:background="@android:color/transparent"
         android:src="@drawable/left_arrow"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/backgroundImage"
+        app:layout_constraintStart_toStartOf="@+id/backgroundRoom"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -139,7 +137,7 @@
         android:layout_marginStart="50dp"
         android:background="@android:color/transparent"
         android:src="@drawable/open_button"
-        app:layout_constraintBottom_toBottomOf="@+id/backgroundImage"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/roomView" />
 
     <ImageView
@@ -156,7 +154,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.24000001"
-        app:srcCompat="@drawable/room_1_window" />
+        android:src="@drawable/room_1_window" />
 
     <TextView
         android:id="@+id/percentOpen"
@@ -173,4 +171,5 @@
         app:layout_constraintEnd_toEndOf="@+id/roomView"
         app:layout_constraintTop_toTopOf="@+id/roomView"
         app:layout_constraintVertical_bias="0.38" />
+
 </android.support.constraint.ConstraintLayout>

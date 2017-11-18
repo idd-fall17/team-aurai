@@ -110,10 +110,6 @@ public class HomeActivity extends Activity {
         //setup buttons onclick listeners
         setupButtons();
 
-        //hide action bar from view
-        //getActionBar().hide();
-
-
 
         //TODO: call to server to get stored setpoint temperature for the room and load it into the button text
 
@@ -417,6 +413,7 @@ public class HomeActivity extends Activity {
     }
 
     private void setupButtons() {
+
         /* Setup button click for BLE setup screen */
         ImageButton BLESetupButton = (ImageButton) findViewById(R.id.BLESetup);
         BLESetupButton.setOnClickListener(new View.OnClickListener() {
@@ -560,6 +557,9 @@ public class HomeActivity extends Activity {
                 Log.d(TAG, "right arrow clicked");
 
                 //TODO: create intent to move to room view
+                Intent myIntent = new Intent(HomeActivity.this, RoomActivity.class);
+                myIntent.putExtra("key", "myString"); //Optional parameters
+                HomeActivity.this.startActivity(myIntent);
 
             }
 
@@ -573,6 +573,9 @@ public class HomeActivity extends Activity {
                 Log.d(TAG, "left arrow clicked");
 
                 //TODO: create intent to move to graph view
+                Intent myIntent = new Intent(HomeActivity.this, GraphActivity.class);
+                myIntent.putExtra("key", "myString"); //Optional parameters
+                HomeActivity.this.startActivity(myIntent);
 
             }
 

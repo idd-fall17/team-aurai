@@ -31,7 +31,8 @@
         <!--android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar">-->
         <uses-library android:name="com.google.android.things"/>
 
-        <activity android:name="com.example.androidthings.aurai.HomeActivity">
+        <activity android:name="com.example.androidthings.aurai.HomeActivity"
+            android:theme="@android:style/Theme.Holo.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -49,7 +50,8 @@
         <activity android:name=".RoomActivity"
             android:theme="@android:style/Theme.Holo.NoActionBar"></activity>
 
-
+        <activity android:name=".GraphActivity"
+            android:theme="@android:style/Theme.Holo.NoActionBar"></activity>
 
 
         <activity android:name="com.example.android.bluetoothlegatt.DeviceScanActivity"

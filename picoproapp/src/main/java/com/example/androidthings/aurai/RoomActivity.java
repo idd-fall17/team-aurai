@@ -39,8 +39,6 @@ public class RoomActivity extends Activity {
 
         setupButtons();
 
-        //hide action bar
-        getActionBar().hide();
 
 
     }
