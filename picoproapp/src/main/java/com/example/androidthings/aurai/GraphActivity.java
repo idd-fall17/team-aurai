@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
@@ -20,6 +21,8 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.EntryXComparator;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -75,6 +78,10 @@ public class GraphActivity extends Activity {
         //setup the graph with initial data
         setupGraph();
 
+        //set setpoint temp to correct value
+        Button setpointTemp = (Button) findViewById(R.id.setTempButtonGraph);
+        setpointTemp.setText(Integer.toString(Constants.setPointTemp));
+
     }
 
 
@@ -99,46 +106,46 @@ public class GraphActivity extends Activity {
         });
 
 
-        Button roomTempButton = (Button) findViewById(R.id.roomTempButtonGraph);
-        roomTempButton.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View view) {
-                Log.d(TAG, "room Temp clicked");
-
-                //TODO: create LineData using the room temp and set to global variable
-
-
-                refreshGraph();
-            }
-
-        });
-
-        Button setPointTempButton = (Button) findViewById(R.id.setTempButtonGraph);
-        setPointTempButton.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View view) {
-                Log.d(TAG, "set Point clicked");
-
-                //TODO: create LineData using the setpoint temp and set to global variable
-
-
-                refreshGraph();
-            }
-
-        });
-
-        Button outdoorTempButton = (Button) findViewById(R.id.outdoorTempGraph);
-        outdoorTempButton.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View view) {
-                Log.d(TAG, "outdoor temp clicked");
-
-                //TODO: create LineData using the outdoor temp and set to global variable
-
-                refreshGraph();
-            }
-
-        });
+//        Button roomTempButton = (Button) findViewById(R.id.roomTempButtonGraph);
+//        roomTempButton.setOnClickListener(new View.OnClickListener() {
+//
+//            public void onClick(View view) {
+//                Log.d(TAG, "room Temp clicked");
+//
+//                //create LineData using the room temp and set to global variable
+//
+//
+//                refreshGraph();
+//            }
+//
+//        });
+//
+//        Button setPointTempButton = (Button) findViewById(R.id.setTempButtonGraph);
+//        setPointTempButton.setOnClickListener(new View.OnClickListener() {
+//
+//            public void onClick(View view) {
+//                Log.d(TAG, "set Point clicked");
+//
+//                //create LineData using the setpoint temp and set to global variable
+//
+//
+//                refreshGraph();
+//            }
+//
+//        });
+//
+//        Button outdoorTempButton = (Button) findViewById(R.id.outdoorTempGraph);
+//        outdoorTempButton.setOnClickListener(new View.OnClickListener() {
+//
+//            public void onClick(View view) {
+//                Log.d(TAG, "outdoor temp clicked");
+//
+//                //create LineData using the outdoor temp and set to global variable
+//
+//                refreshGraph();
+//            }
+//
+//        });
 
     }
 
@@ -169,19 +176,14 @@ public class GraphActivity extends Activity {
         int[] x2 = new int[]{9,8,7,6,5,4,3,2,1};
         int[] y2 = new int[]{1,2,3,4,5,6,7,8,9};
 
-        int[] x3 = new int[]{9,8,7,6,5,4,3,2,1};
-        int[] y3 = new int[]{9,8,7,6,5,4,3,2,1};
 
         List<Entry> chartEntries1 = new ArrayList<Entry>();
         List<Entry> chartEntries2 = new ArrayList<Entry>();
-        //List<Entry> chartEntries3 = new ArrayList<Entry>();
 
 
         for (int i = 0; i < x.length; i++) {
             chartEntries1.add(new Entry(x[i], y[i]));
             chartEntries2.add(new Entry(x2[i], y2[i]));
-            //chartEntries3.add(new Entry(x3[i], y3[i]));
-
         }
 
         Collections.sort(chartEntries1, new EntryXComparator());
@@ -197,13 +199,10 @@ public class GraphActivity extends Activity {
         chartData2.setAxisDependency(YAxis.AxisDependency.LEFT);
         chartData2.setDrawValues(false);
 
-        //LineDataSet chartData3 = new LineDataSet(chartEntries3, "dataset3");
-        //chartData3.setAxisDependency(YAxis.AxisDependency.LEFT);
 
         List<ILineDataSet> dataSets = new ArrayList<ILineDataSet>();
         dataSets.add(chartData);
         dataSets.add(chartData2);
-        //dataSets.add(chartData3);
 
         LineData data = new LineData(dataSets);
         chart.setData(data);

@@ -55,6 +55,9 @@ public class RoomActivity extends Activity {
         setupButtons();
         setupSeekBar();
 
+        //set setpoint temp to correct value
+        TextView setpointTemp = (TextView) findViewById(R.id.setpointTempRoom);
+        setpointTemp.setText(Integer.toString(Constants.setPointTemp));
 
     }
 
