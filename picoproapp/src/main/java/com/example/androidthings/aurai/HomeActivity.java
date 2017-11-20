@@ -20,14 +20,17 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.ParcelUuid;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -42,6 +45,8 @@ import com.example.android.bluetoothlegatt.DeviceScanActivity;
 import com.example.android.bluetoothlegatt.SampleGattAttributes;
 
 import java.util.List;
+
+import static com.example.androidthings.aurai.Constants.setPointTemp;
 
 /**
  * Created by MichaelOudenhoven on 11/3/17.
@@ -61,13 +66,17 @@ public class HomeActivity extends Activity {
     private Button setTempButton;
     //boolean to control when the setpoint arrows should be shown or not
     private boolean settingTemp = false;
-    //temperature the room is set to
-    private int setPointTemp;
 
     //seek bar for window position
     private SeekBar seekBar;
     private TextView seekBarPercent;
     //private int seekBarSetPoint = 0;
+
+    //weather type image view
+    private ImageView weatherTypeImage;
+
+
+
 
     //LIFECYCLE METHODS
 
@@ -139,6 +148,14 @@ public class HomeActivity extends Activity {
             setPointTemp = 20;
         }
 
+        //set setpoint value to value
+        setTempButton.setText(Integer.toString(setPointTemp));
+
+
+        //way to adjust the weather image type after data has come in
+        Drawable weatherImage = ResourcesCompat.getDrawable(getResources(), R.drawable.sunny, null);
+        weatherTypeImage = (ImageView) findViewById(R.id.weatherTypeImageHome);
+        weatherTypeImage.setImageDrawable(weatherImage);
 
     }
 
