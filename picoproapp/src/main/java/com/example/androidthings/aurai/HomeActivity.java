@@ -45,6 +45,9 @@ import com.example.android.bluetoothlegatt.DeviceScanActivity;
 import com.example.android.bluetoothlegatt.SampleGattAttributes;
 
 import java.util.List;
+import com.google.gson.Gson;
+
+import org.json.*;
 
 import static com.example.androidthings.aurai.Constants.setPointTemp;
 
@@ -306,15 +309,37 @@ public class HomeActivity extends Activity {
 //                    throw new RuntimeException(e);
 //                }
                 RequestQueue queue = Volley.newRequestQueue(HomeActivity.this);
-                String url ="http://aurai-web.herokuapp.com/api/sensorreadings/?format=json";
+                String url ="http://aurai-web.herokuapp.com/api/sensorreading/0x0229/?format=json";
 
                 StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                         new Response.Listener<String>() {
-                            TextView tv = findViewById(R.id.sensor_data_text);
+//                            TextView tv = findViewById(R.id.sensor_data_text);
+                            TextView sensorTemp = findViewById(R.id.roomTempHome);
+                            String roomTemperature = sensorTemp.getText().toString();
+                            float roomTempf = Float.parseFloat(roomTemperature);
+                            int roomTemp = Math.round(roomTempf);
+
+
+
                             @Override
                             public void onResponse(String response) {
                                 // Display the first 500 characters of the response string.
-                                tv.setText("Response is: "+ response.substring(0,500));
+//                                tv.setText("Response is: "+ response.substring(0,500));
+                                try {
+                                    JSONArray reader = new JSONArray(response);
+                                    JSONObject sensor = reader.getJSONObject(0);
+                                    roomTemperature = sensor.getString("air_temp");
+                                    roomTempf = Float.parseFloat(roomTemperature);
+                                    roomTemp = Math.round(roomTempf);
+                                    roomTemperature = Integer.toString(roomTemp);
+
+                                }
+                                catch(org.json.JSONException e){
+                                    Log.e(TAG, "Couldn't get weather data.");
+                                }
+
+                                Constants.roomTemp = roomTemp;
+                                sensorTemp.setText(roomTemperature);
                             }
                         }, new Response.ErrorListener() {
 
@@ -337,16 +362,31 @@ public class HomeActivity extends Activity {
                             @Override
                             public void onResponse(String response) {
                                 Log.d(TAG, response);
-                                // Display the first 500 characters of the response string.
-                                tv.setText("Response is: "+ response.substring(0,500));
+                                String outDoorTemperature = tv.getText().toString();
+                                float outDoorTempf = Float.parseFloat(outDoorTemperature);
+                                int outDoorTemp = Math.round(outDoorTempf);
+
+                                try {
+                                    JSONObject reader = new JSONObject(response);
+                                    JSONObject main = reader.getJSONObject("main");
+                                    outDoorTemperature = main.getString("temp");
+                                    outDoorTempf = Float.parseFloat(outDoorTemperature);
+                                    outDoorTemp = Math.round(outDoorTempf) - 273;
+                                    outDoorTemperature = Integer.toString(outDoorTemp);
+
+                                }
+                                catch(org.json.JSONException e){
+                                    Log.e(TAG, "Couldn't get weather data.");
+                                }
+
+                                Constants.outdoorTemp = outDoorTemp;
+                                tv.setText(outDoorTemperature);
                             }
                         }, new Response.ErrorListener() {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.e( TAG ,error.toString());
-                        TextView tv = findViewById(R.id.sensor_data_text);
-                        tv.setText("That didn't work!");
                     }
 
                 });

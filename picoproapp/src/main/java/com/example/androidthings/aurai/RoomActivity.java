@@ -59,6 +59,16 @@ public class RoomActivity extends Activity {
         TextView setpointTemp = (TextView) findViewById(R.id.setpointTempRoom);
         setpointTemp.setText(Integer.toString(Constants.setPointTemp));
 
+        TextView outDoorTempTV = (TextView) findViewById(R.id.outdoorTempRoom);
+        String temperature = Integer.toString(Constants.outdoorTemp);
+        outDoorTempTV.setText(temperature);
+
+        TextView roomTempTV = (TextView) findViewById(R.id.roomTempRoom);
+        String roomTemperature = Integer.toString(Constants.roomTemp);
+        roomTempTV.setText(roomTemperature);
+
+
+
     }
 
 

@@ -82,6 +82,14 @@ public class GraphActivity extends Activity {
         Button setpointTemp = (Button) findViewById(R.id.setTempButtonGraph);
         setpointTemp.setText(Integer.toString(Constants.setPointTemp));
 
+        Button outDoorTempButton = (Button) findViewById(R.id.outdoorTempGraph);
+        String temperature = Integer.toString(Constants.outdoorTemp);
+        outDoorTempButton.setText(temperature);
+
+        Button roomTempButton = (Button) findViewById(R.id.roomTempButtonGraph);
+        String roomTemperature = Integer.toString(Constants.roomTemp);
+        roomTempButton.setText(roomTemperature);
+
     }
 
 
