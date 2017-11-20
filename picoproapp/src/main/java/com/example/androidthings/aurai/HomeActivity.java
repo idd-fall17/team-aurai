@@ -313,6 +313,29 @@ public class HomeActivity extends Activity {
                 // Add the request to the RequestQueue.
                 queue.add(stringRequest);
 
+                String weather_url = "http://api.openweathermap.org/data/2.5/weather?q=Berkeley&appid=a5c2d2ffd12b150a969a22377d62efa3";
+                StringRequest weather_stringRequest = new StringRequest(Request.Method.GET, weather_url,
+                        new Response.Listener<String>() {
+                            TextView tv = findViewById(R.id.outdoorTempHome);
+                            @Override
+                            public void onResponse(String response) {
+                                Log.d(TAG, response);
+                                // Display the first 500 characters of the response string.
+                                tv.setText("Response is: "+ response.substring(0,500));
+                            }
+                        }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e( TAG ,error.toString());
+                        TextView tv = findViewById(R.id.sensor_data_text);
+                        tv.setText("That didn't work!");
+                    }
+
+                });
+
+                queue.add(weather_stringRequest);
+
             }
         });
 
