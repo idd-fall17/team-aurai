@@ -129,6 +129,7 @@ public class BluetoothLeService extends Service {
         public void onCharacteristicRead(BluetoothGatt gatt,
                                          BluetoothGattCharacteristic characteristic,
                                          int status) {
+            Log.d(TAG, "onCharacteristicRead: " + characteristic.getUuid());
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
             }
@@ -137,6 +138,7 @@ public class BluetoothLeService extends Service {
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt,
                                             BluetoothGattCharacteristic characteristic) {
+            Log.d(TAG, "onCharacteristicChanged: " + characteristic.getUuid());
             broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
         }
     };
@@ -188,7 +190,15 @@ public class BluetoothLeService extends Service {
             final int heartRate = characteristic.getIntValue(format, 1);
             Log.d(TAG, String.format("Received heart rate: %d", heartRate));
             intent.putExtra(EXTRA_DATA, String.valueOf(heartRate));
-        } else {
+        }
+//        else if (Constants.ACTUAL_POSITION.equals(characteristic.getUuid())) {
+//            int flag = characteristic.getProperties();
+//            int format = BluetoothGattCharacteristic.FORMAT_UINT32;
+//            final int window_position = characteristic.getIntValue(format, 1);
+//            Log.d(TAG, String.format("Received window position: %d", window_position));
+//            intent.putExtra(EXTRA_DATA, String.valueOf(window_position));
+//        }
+        else {
             // For all other profiles, writes the data formatted in HEX.
             final byte[] data = characteristic.getValue();
             if (data != null && data.length > 0) {

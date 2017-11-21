@@ -45,6 +45,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.android.bluetoothlegatt.DeviceScanActivity;
 import com.example.android.bluetoothlegatt.SampleGattAttributes;
 
+import java.nio.ByteBuffer;
 import java.util.List;
 import com.google.gson.Gson;
 
@@ -254,7 +255,7 @@ public class HomeActivity extends Activity {
             return false;
         }
 
-        BluetoothGattCharacteristic charac = customService.getCharacteristic(Constants.ACTUAL_POSITION);
+        BluetoothGattCharacteristic charac = customService.getCharacteristic(Constants.POSITION);
         if (charac == null) {
             Log.e(TAG, "position characteristic not found!");
             return false;
@@ -292,7 +293,7 @@ public class HomeActivity extends Activity {
             @Override
             public void onClick(View view) {
 
-                boolean success = writeCharacteristic(Constants.closed);
+                boolean success = writeWindowSetpoint(Constants.closed);
 
                 if (!success) {
                     Log.d(TAG, "characteristic did not write to close the window");
@@ -308,7 +309,7 @@ public class HomeActivity extends Activity {
             @Override
             public void onClick(View view) {
 
-                boolean success = writeCharacteristic(Constants.open);
+                boolean success = writeWindowSetpoint(Constants.open);
 
                 if (!success) {
                     Log.d(TAG, "characteristic did not write to open the window");
@@ -546,6 +547,7 @@ public class HomeActivity extends Activity {
                 TextView outdoorTV = (TextView) findViewById(R.id.outdoorTempHome);
                 outdoorTV.setText(Integer.toString(Constants.outdoorTemp));
 
+                windowControl();
             }
         });
 
@@ -560,6 +562,8 @@ public class HomeActivity extends Activity {
                 TextView outdoorTV = (TextView) findViewById(R.id.outdoorTempHome);
                 outdoorTV.setText(Integer.toString(Constants.outdoorTemp));
 
+                windowControl();
+
 
             }
         });
@@ -570,13 +574,42 @@ public class HomeActivity extends Activity {
         int roomTemp = Constants.roomTemp;
         int outdoorTemp = Constants.outdoorTemp;
         int setpointTemp = Constants.setPointTemp;
+        int windowScale = 5;
+        int window_setpoint = Constants.window_setpoint;
 
-//        When it's too warm.
-        if (roomTemp > setpointTemp){
-//            if (roomTemp > )
+        getWindowPosition();
+
+//        boolean success2 = getWindowPosition();
+
+//        if (!success2) {
+//            Log.d(TAG, "characteristic could not be read to get window position");
+//        }
+
+        //        When it's too warm inside, but cool outside.
+        if (roomTemp > setpointTemp) {
+            if (roomTemp > outdoorTemp) {
+                window_setpoint = (roomTemp - setpointTemp) * 100;
+                window_setpoint /= windowScale;
+            } else {
+                window_setpoint = 0;
+            }
+        }
+        //        When it's too cold inside, but warm outside
+        else{
+            if (roomTemp < outdoorTemp){
+                window_setpoint = (setpointTemp - roomTemp) * 100;
+                window_setpoint /= windowScale;
+            }
+            else{
+                window_setpoint = 0;
+            }
         }
 
-        Constants.window_setpoint = 2;
+        if (window_setpoint > 100)
+            window_setpoint = 100;
+
+        Log.d(TAG, "Window setpoint: " + window_setpoint);
+        Constants.window_setpoint = window_setpoint;
         boolean success = writeWindowSetpoint(Constants.window_setpoint);
 
         if (!success) {
@@ -590,7 +623,7 @@ public class HomeActivity extends Activity {
 
         //check mBluetoothGatt is available
         if (mBluetoothGatt == null) {
-            Log.e(TAG, "lost connection - bluetooth GATT is null in writeCharacteristic()");
+            Log.e(TAG, "lost connection - bluetooth GATT is null in writeWindowSetpoint()");
             return false;
         }
 
@@ -607,7 +640,7 @@ public class HomeActivity extends Activity {
 
         BluetoothGattCharacteristic charac = customService.getCharacteristic(Constants.POSITION);
         if (charac == null) {
-            Log.e(TAG, "position characteristic not found!");
+            Log.e(TAG, "position setpoint characteristic not found!");
             return false;
         }
 
@@ -617,9 +650,61 @@ public class HomeActivity extends Activity {
         charac.setValue(window_setpoint, BluetoothGattCharacteristic.FORMAT_UINT32, 0);
 
         boolean status = mBluetoothGatt.writeCharacteristic(charac);
+//        mBluetoothGatt.setCharacteristicNotification(charac, false);
         return status;
     }
 
+    boolean getWindowPosition(){
+        BluetoothGatt mBluetoothGatt = Constants.getmBluetoothLeService().getmBluetoothGatt();
+        int window_position;
+
+        //check mBluetoothGatt is available
+        if (mBluetoothGatt == null) {
+            Log.e(TAG, "lost connection - bluetooth GATT is null in getWindowPosition()");
+            return false;
+        }
+
+        List<BluetoothGattService> list = Constants.getmBluetoothLeService().getSupportedGattServices();
+        Log.d(TAG, list.toString());
+
+        BluetoothGattService customService = null;
+        customService = mBluetoothGatt.getService(Constants.CUSTOM_SERVICE);
+
+        if (customService == null) {
+            Log.e(TAG, "service not found!");
+            return false;
+        }
+
+        BluetoothGattCharacteristic charac = customService.getCharacteristic(Constants.ACTUAL_POSITION);
+        if (charac == null) {
+            Log.e(TAG, "position characteristic not found!");
+            return false;
+        }
+
+        mBluetoothGatt.setCharacteristicNotification(charac, true);
+        Log.d(TAG, "Attempting to read " + charac.getUuid());
+
+
+        byte[] value = charac.getValue();
+
+        Log.d(TAG, "Window position (byte address): " + value);
+
+        try {
+            Log.d(TAG, "Window position: " + charac.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 0));
+
+            window_position = charac.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 0);
+
+            Constants.window_position = window_position;
+        }
+        catch (Exception e){
+            Log.e(TAG, "getWindowPosition: ",e );
+        }
+        Log.d(TAG, "Window position: " + Constants.window_position);
+
+        boolean status = mBluetoothGatt.readCharacteristic(charac);
+//        mBluetoothGatt.setCharacteristicNotification(charac, false);
+        return status;
+    }
 
     /**
      * Sets up the seek bar to move in 10% increments to open the windows. Includes listener methods
