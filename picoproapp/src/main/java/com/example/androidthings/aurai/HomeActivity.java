@@ -126,6 +126,8 @@ public class HomeActivity extends Activity {
         Log.d(TAG, "Display density in dpi: "+ dm.densityDpi);
 
 
+        //register to receive messages
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter(Constants.BT_CONNECTION));
 
 //        /* Set up bluetooth */
 //        mBluetoothManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);

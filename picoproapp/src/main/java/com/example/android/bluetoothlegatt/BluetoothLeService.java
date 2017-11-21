@@ -90,7 +90,7 @@ public class BluetoothLeService extends Service {
                 Intent intent = new Intent(Constants.BT_CONNECTION);
                 // You can also include some extra data.
                 intent.putExtra(Constants.BT_EXTRA, Constants.BT_CONNECTED);
-                LocalBroadcastManager.getInstance(BluetoothLeService.this).sendBroadcast(intent);
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
 
 
 
@@ -108,8 +108,7 @@ public class BluetoothLeService extends Service {
                 Intent intent = new Intent(Constants.BT_CONNECTION);
                 // You can also include some extra data.
                 intent.putExtra(Constants.BT_EXTRA, Constants.BT_DISCONNECTED);
-                LocalBroadcastManager.getInstance(BluetoothLeService.this).sendBroadcast(intent);
-
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
 
 
             }
