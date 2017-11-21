@@ -24,6 +24,11 @@ public class Constants {
 
 //    public static UUID HRM = UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb");
 
+    //intent name for bluetooth connection broadcast notifications
+    final public static String BT_CONNECTION = "bt_connection";
+    final public static String BT_EXTRA = "connection";
+    final public static String BT_CONNECTED = "connected";
+    final public static String BT_DISCONNECTED = "disconnected";
 
 
     /*Positions for window proto 2 */

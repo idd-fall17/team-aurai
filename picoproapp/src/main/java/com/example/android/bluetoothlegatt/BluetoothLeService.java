@@ -30,6 +30,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.example.androidthings.aurai.Constants;
@@ -84,10 +85,12 @@ public class BluetoothLeService extends Service {
                 Log.i(TAG, "Attempting to start service discovery:" + mBluetoothGatt.discoverServices());
 
 
-                //TODO:
-                //Log.d(TAG, gatt.getServices().toString());
-                //add to the constants to reference later
-//                Constants.setmBluetoothGatt(gatt);
+                //change the bluetooth icon to blue when connected
+                //https://stackoverflow.com/questions/3947641/android-equivalent-to-nsnotificationcenter -- see second answer in question
+                Intent intent = new Intent(Constants.BT_CONNECTION);
+                // You can also include some extra data.
+                intent.putExtra(Constants.BT_EXTRA, Constants.BT_CONNECTED);
+                LocalBroadcastManager.getInstance(BluetoothLeService.this).sendBroadcast(intent);
 
 
 
@@ -100,13 +103,19 @@ public class BluetoothLeService extends Service {
 
 
 
-                //TODO:
-                //remove from constants
-//                Constants.setmBluetoothGatt(null);
+                //change the bluetooth icon to blue when connected
+                //https://stackoverflow.com/questions/3947641/android-equivalent-to-nsnotificationcenter -- see second answer in question
+                Intent intent = new Intent(Constants.BT_CONNECTION);
+                // You can also include some extra data.
+                intent.putExtra(Constants.BT_EXTRA, Constants.BT_DISCONNECTED);
+                LocalBroadcastManager.getInstance(BluetoothLeService.this).sendBroadcast(intent);
+
 
 
             }
         }
+
+
 
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
@@ -137,6 +146,29 @@ public class BluetoothLeService extends Service {
         final Intent intent = new Intent(action);
         sendBroadcast(intent);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*
+    I THINK THIS IS THE METHOD THAT WE NEED TO IMPLEMENT TO GET DATA BACK FROM THE FEATHER ON POSITION
+     */
+
+
+
 
     private void broadcastUpdate(final String action, final BluetoothGattCharacteristic characteristic) {
         final Intent intent = new Intent(action);
@@ -169,6 +201,29 @@ public class BluetoothLeService extends Service {
         }
         sendBroadcast(intent);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public class LocalBinder extends Binder {
         BluetoothLeService getService() {
@@ -347,4 +402,5 @@ public class BluetoothLeService extends Service {
     public BluetoothGatt getmBluetoothGatt() {
         return mBluetoothGatt;
     }
+
 }

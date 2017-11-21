@@ -23,6 +23,7 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.ParcelUuid;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -79,6 +80,32 @@ public class HomeActivity extends Activity {
     private ImageView weatherTypeImage;
 
 
+    //setup broadcast receiver to tell when bluetooth connection is gained and lost
+    //this will then be used to change the bluetooth icon color
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            String message = intent.getStringExtra(Constants.BT_EXTRA);
+            //log message for debugging
+            Log.d("receiver", "Got message: " + message);
+
+            //verify state and update bluetooth icon based on the connection state
+            if(message == Constants.BT_CONNECTED) {
+                //way to adjust the weather image type after data has come in
+                Drawable BTImage = ResourcesCompat.getDrawable(getResources(), R.drawable.blue_bt_icon, null);
+                ImageButton BTbutton = (ImageButton) findViewById(R.id.BLESetup);
+                BTbutton.setImageDrawable(BTImage);
+
+
+            } else if (message == Constants.BT_DISCONNECTED) {
+                //way to adjust the weather image type after data has come in
+                Drawable BTImage = ResourcesCompat.getDrawable(getResources(), R.drawable.white_bt_icon, null);
+                ImageButton BTbutton = (ImageButton) findViewById(R.id.BLESetup);
+                BTbutton.setImageDrawable(BTImage);
+            }
+        }
+    };
 
 
     //LIFECYCLE METHODS
@@ -160,6 +187,11 @@ public class HomeActivity extends Activity {
         weatherTypeImage = (ImageView) findViewById(R.id.weatherTypeImageHome);
         weatherTypeImage.setImageDrawable(weatherImage);
 
+
+
+
+
+
     }
 
 
@@ -174,6 +206,11 @@ public class HomeActivity extends Activity {
         }
 
         unregisterReceiver(mBluetoothReceiver);
+
+        // Unregister since the activity is about to be closed.
+        // This is somewhat like [[NSNotificationCenter defaultCenter] removeObserver:name:object:]
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        super.onDestroy();
     }
 
 
@@ -516,6 +553,37 @@ public class HomeActivity extends Activity {
 
         });
 
+
+
+        /*
+        BUTTONS FOR FORCED OUTDOOR TEMPERATURE
+         */
+        Button outdoorHighButton = (Button) findViewById(R.id.outdoorHigh);
+        outdoorHighButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //force outdoor temp higher than indoor temp
+                Constants.outdoorTemp = Constants.roomTemp + 5;
+
+                //update the outdoor temp on the UI
+                TextView outdoorTV = (TextView) findViewById(R.id.outdoorTempHome);
+                outdoorTV.setText(Integer.toString(Constants.outdoorTemp));
+
+            }
+        });
+
+        Button outdoorLowButton = (Button) findViewById(R.id.outdoorLow);
+        outdoorLowButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //force outdoor temp lower than indoor temp
+                Constants.outdoorTemp = Constants.roomTemp - 5;
+
+                //update teh outdoor temp on the UI
+                TextView outdoorTV = (TextView) findViewById(R.id.outdoorTempHome);
+                outdoorTV.setText(Integer.toString(Constants.outdoorTemp));
+            }
+        });
 
     }
 

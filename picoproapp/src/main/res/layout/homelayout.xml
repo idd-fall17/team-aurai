@@ -252,4 +252,25 @@
         app:layout_constraintEnd_toEndOf="@+id/windowSeek"
         app:layout_constraintStart_toStartOf="@+id/windowSeek" />
 
+    <Button
+        android:id="@+id/outdoorHigh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="250dp"
+        android:text="outdoor high"
+        app:layout_constraintBottom_toBottomOf="@+id/outdoorLow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/outdoorLow"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/outdoorLow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="250dp"
+        android:text="outdoor low"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </android.support.constraint.ConstraintLayout>
