@@ -188,10 +188,6 @@ public class HomeActivity extends Activity {
         weatherTypeImage.setImageDrawable(weatherImage);
 
 
-
-
-
-
     }
 
 
@@ -239,15 +235,15 @@ public class HomeActivity extends Activity {
 
         BluetoothGattService customService = null;
 
-        for(int i = 0; i< list.size(); i++){
-            Log.d(TAG, list.get(i).getUuid().toString());
-
-            if (list.get(i).getUuid().toString() == Constants.CUSTOM_SERVICE.toString()) {
-                Log.d(TAG, "heart rate service detected");
-                customService = list.get(i);
-                break;
-            }
-        }
+//        for(int i = 0; i< list.size(); i++){
+//            Log.d(TAG, list.get(i).getUuid().toString());
+//
+//            if (list.get(i).getUuid().toString() == Constants.CUSTOM_SERVICE.toString()) {
+//                Log.d(TAG, "window service detected");
+//                customService = list.get(i);
+//                break;
+//            }
+//        }
 
         customService = mBluetoothGatt.getService(Constants.CUSTOM_SERVICE);
 
@@ -256,20 +252,11 @@ public class HomeActivity extends Activity {
             return false;
         }
 
-
-//        BluetoothGattService Service = mBluetoothGatt.getService(Constants.CUSTOM_SERVICE);
-////        BluetoothGattService Service = mBluetoothGatt.getService(Constants.CUSTOM_SERVICE);
-//        if (Service == null) {
-//            Log.e(TAG, "service not found!");
-//            return false;
-//        }
-        BluetoothGattCharacteristic charac = customService.getCharacteristic(Constants.POSITION);
+        BluetoothGattCharacteristic charac = customService.getCharacteristic(Constants.ACTUAL_POSITION);
         if (charac == null) {
             Log.e(TAG, "position characteristic not found!");
             return false;
         }
-
-
 
         mBluetoothGatt.setCharacteristicNotification(charac, true);
 
@@ -332,19 +319,7 @@ public class HomeActivity extends Activity {
         sensorReadingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                try {
-//                    URL url = new URL("http://aurai-web.herokuapp.com/api/sensorreadings/?format=json");
-//                    URLConnection uc = url.openConnection();
-//                    String userpass = "admin:admin123";
-//                    String basicAuth = "Basic " + new String(userpass.getBytes());
-//                    uc.setRequestProperty("Authorization", basicAuth);
-//                    InputStream in = uc.getInputStream();
-//                    String theString = IOUtils.toString(in, "UTF-8");
-//                    Log.d(TAG, "onClick: "+theString);
-//                }
-//                catch (IOException e){
-//                    throw new RuntimeException(e);
-//                }
+//
                 RequestQueue queue = Volley.newRequestQueue(HomeActivity.this);
                 String url ="http://aurai-web.herokuapp.com/api/sensorreading/0x0229/?format=json";
 
@@ -579,12 +554,68 @@ public class HomeActivity extends Activity {
                 //force outdoor temp lower than indoor temp
                 Constants.outdoorTemp = Constants.roomTemp - 5;
 
-                //update teh outdoor temp on the UI
+                //update the outdoor temp on the UI
                 TextView outdoorTV = (TextView) findViewById(R.id.outdoorTempHome);
                 outdoorTV.setText(Integer.toString(Constants.outdoorTemp));
+
+
             }
         });
 
+    }
+
+    void windowControl(){
+        int roomTemp = Constants.roomTemp;
+        int outdoorTemp = Constants.outdoorTemp;
+        int setpointTemp = Constants.setPointTemp;
+
+//        When it's too warm.
+        if (roomTemp > setpointTemp){
+//            if (roomTemp > )
+        }
+
+        Constants.window_setpoint = 2;
+        boolean success = writeWindowSetpoint(Constants.window_setpoint);
+
+        if (!success) {
+            Log.d(TAG, "characteristic did not write to change window setpoint");
+        }
+
+    }
+
+    boolean writeWindowSetpoint(int window_setpoint){
+        BluetoothGatt mBluetoothGatt = Constants.getmBluetoothLeService().getmBluetoothGatt();
+
+        //check mBluetoothGatt is available
+        if (mBluetoothGatt == null) {
+            Log.e(TAG, "lost connection - bluetooth GATT is null in writeCharacteristic()");
+            return false;
+        }
+
+        List<BluetoothGattService> list = Constants.getmBluetoothLeService().getSupportedGattServices();
+        Log.d(TAG, list.toString());
+
+        BluetoothGattService customService = null;
+        customService = mBluetoothGatt.getService(Constants.CUSTOM_SERVICE);
+
+        if (customService == null) {
+            Log.e(TAG, "service not found!");
+            return false;
+        }
+
+        BluetoothGattCharacteristic charac = customService.getCharacteristic(Constants.POSITION);
+        if (charac == null) {
+            Log.e(TAG, "position characteristic not found!");
+            return false;
+        }
+
+        mBluetoothGatt.setCharacteristicNotification(charac, true);
+
+        byte[] value =  Integer.toHexString(window_setpoint).getBytes();
+        charac.setValue(window_setpoint, BluetoothGattCharacteristic.FORMAT_UINT32, 0);
+
+        boolean status = mBluetoothGatt.writeCharacteristic(charac);
+        return status;
     }
 
 

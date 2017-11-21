@@ -34,6 +34,8 @@ public class Constants {
     /*Positions for window proto 2 */
     public static int open = 1;
     public static int closed = 0;
+    public static int window_setpoint;
+    public static int window_position;
 
 
     //percentage the window is open
