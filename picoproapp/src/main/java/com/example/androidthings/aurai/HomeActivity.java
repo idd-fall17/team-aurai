@@ -22,6 +22,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.ParcelUuid;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.content.res.ResourcesCompat;
@@ -42,6 +43,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import com.example.android.bluetoothlegatt.BluetoothLeService;
 import com.example.android.bluetoothlegatt.DeviceScanActivity;
 import com.example.android.bluetoothlegatt.SampleGattAttributes;
 
@@ -79,7 +81,8 @@ public class HomeActivity extends Activity {
 
     //weather type image view
     private ImageView weatherTypeImage;
-
+    Handler handler = new Handler();
+    int delay = 15000; //milliseconds
 
     //setup broadcast receiver to tell when bluetooth connection is gained and lost
     //this will then be used to change the bluetooth icon color
@@ -189,6 +192,8 @@ public class HomeActivity extends Activity {
         Drawable weatherImage = ResourcesCompat.getDrawable(getResources(), R.drawable.sunny, null);
         weatherTypeImage = (ImageView) findViewById(R.id.weatherTypeImageHome);
         weatherTypeImage.setImageDrawable(weatherImage);
+
+
 
 
     }
@@ -323,6 +328,12 @@ public class HomeActivity extends Activity {
             @Override
             public void onClick(View view) {
 //
+                handler.postDelayed(new Runnable(){
+                    public void run(){
+                        windowControl();
+                        handler.postDelayed(this, delay);
+                    }
+                }, delay);
                 RequestQueue queue = Volley.newRequestQueue(HomeActivity.this);
                 String url ="http://aurai-web.herokuapp.com/api/sensorreading/0x0229/?format=json";
 
@@ -504,6 +515,7 @@ public class HomeActivity extends Activity {
 
             public void onClick(View view) {
                 Log.d(TAG, "window adjust clicked");
+                Constants.seekBarSetPoint = Constants.window_position;
 
                 //TODO: make slider with animation appear
 
@@ -547,7 +559,7 @@ public class HomeActivity extends Activity {
                 TextView outdoorTV = (TextView) findViewById(R.id.outdoorTempHome);
                 outdoorTV.setText(Integer.toString(Constants.outdoorTemp));
 
-                windowControl();
+//                windowControl();
             }
         });
 
@@ -562,7 +574,7 @@ public class HomeActivity extends Activity {
                 TextView outdoorTV = (TextView) findViewById(R.id.outdoorTempHome);
                 outdoorTV.setText(Integer.toString(Constants.outdoorTemp));
 
-                windowControl();
+//                windowControl();
 
 
             }
@@ -570,17 +582,23 @@ public class HomeActivity extends Activity {
 
     }
 
-    void windowControl(){
+    public void windowControl(){
         int roomTemp = Constants.roomTemp;
         int outdoorTemp = Constants.outdoorTemp;
         int setpointTemp = Constants.setPointTemp;
         int windowScale = 5;
         int window_setpoint = Constants.window_setpoint;
 
-        getWindowPosition();
+//        getWindowPosition();
 
+        try{
+            Constants.getmBluetoothLeService().addToBleQueue(-1);
+        }
+        catch (Exception e){
+            Log.e(TAG, "windowControl: ", e);
+        }
 //        boolean success2 = getWindowPosition();
-
+//
 //        if (!success2) {
 //            Log.d(TAG, "characteristic could not be read to get window position");
 //        }
@@ -608,17 +626,22 @@ public class HomeActivity extends Activity {
         if (window_setpoint > 100)
             window_setpoint = 100;
 
-        Log.d(TAG, "Window setpoint: " + window_setpoint);
+//        Log.d(TAG, "Window setpoint: " + window_setpoint);
         Constants.window_setpoint = window_setpoint;
-        boolean success = writeWindowSetpoint(Constants.window_setpoint);
-
-        if (!success) {
-            Log.d(TAG, "characteristic did not write to change window setpoint");
+        try {
+            Constants.getmBluetoothLeService().addToBleQueue(window_setpoint);
         }
+        catch (Exception e){
+            Log.e(TAG, "windowControl: ", e);
+        }
+//        boolean success = writeWindowSetpoint(Constants.window_setpoint);
+//        if (!success) {
+//            Log.d(TAG, "characteristic did not write to change window setpoint");
+//        }
 
     }
 
-    boolean writeWindowSetpoint(int window_setpoint){
+    public static boolean writeWindowSetpoint(int window_setpoint){
         BluetoothGatt mBluetoothGatt = Constants.getmBluetoothLeService().getmBluetoothGatt();
 
         //check mBluetoothGatt is available
@@ -654,7 +677,7 @@ public class HomeActivity extends Activity {
         return status;
     }
 
-    boolean getWindowPosition(){
+    public static boolean getWindowPosition(){
         BluetoothGatt mBluetoothGatt = Constants.getmBluetoothLeService().getmBluetoothGatt();
         int window_position;
 
@@ -684,7 +707,7 @@ public class HomeActivity extends Activity {
         mBluetoothGatt.setCharacteristicNotification(charac, true);
         Log.d(TAG, "Attempting to read " + charac.getUuid());
 
-
+//        Constants.getmBluetoothLeService().readCharacteristic(charac);
         byte[] value = charac.getValue();
 
         Log.d(TAG, "Window position (byte address): " + value);
@@ -700,6 +723,7 @@ public class HomeActivity extends Activity {
             Log.e(TAG, "getWindowPosition: ",e );
         }
         Log.d(TAG, "Window position: " + Constants.window_position);
+
 
         boolean status = mBluetoothGatt.readCharacteristic(charac);
 //        mBluetoothGatt.setCharacteristicNotification(charac, false);

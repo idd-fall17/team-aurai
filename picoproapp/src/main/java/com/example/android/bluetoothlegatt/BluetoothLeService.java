@@ -34,9 +34,13 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.example.androidthings.aurai.Constants;
+import com.example.androidthings.aurai.HomeActivity;
+
 
 import java.util.List;
 import java.util.UUID;
+import java.util.Queue;
+import java.util.LinkedList;
 
 /**
  * Service for managing connection and data communication with a GATT server hosted on a
@@ -68,6 +72,53 @@ public class BluetoothLeService extends Service {
 
     public final static UUID UUID_HEART_RATE_MEASUREMENT =
             UUID.fromString(SampleGattAttributes.HEART_RATE_MEASUREMENT);
+
+    private Queue bleQueue = new LinkedList<Integer>();
+    private boolean isWriting = false;
+
+    public void addToBleQueue(int intValue) {
+        Log.d(TAG, "addToBleQueue: " + intValue);
+        bleQueue.add(intValue);
+        nextCommandFromQueue();
+    }
+
+    private int waitingCount =0;
+    private void nextCommandFromQueue() {
+        int command;
+        if (isWriting) {
+            Log.d(TAG, "nextCommandFromQueue: currently writing");
+            waitingCount++;
+            if (waitingCount > 6){
+                waitingCount = 0;
+                isWriting = false;
+            }
+            return;
+        }
+        if (bleQueue.size() == 0) {
+            return;
+        }
+        isWriting = true;
+
+        try{
+            command = Integer.parseInt(bleQueue.poll().toString());
+            Log.d(TAG, "ble command: " + command);
+            if (command >= 0){
+                HomeActivity.writeWindowSetpoint(command);
+                Log.d(TAG, "nextCommandFromQueue: writeWindowSetpoint called");
+            }
+            else{
+                HomeActivity.getWindowPosition();
+                Log.d(TAG, "nextCommandFromQueue: getWindowPosition called");
+            }
+        }
+        catch (Exception e){
+            Log.e(TAG, "nextCommandFromQueue: ", e);
+        }
+
+//        mNotifyCharacteristic.setValue(writeQueue.poll().getBytes());
+//        mBluetoothGatt.writeCharacteristic(mNotifyCharacteristic);
+    }
+
 
     // Implements callback methods for GATT events that the app cares about.  For example,
     // connection change and services discovered.
@@ -133,7 +184,23 @@ public class BluetoothLeService extends Service {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
             }
+            isWriting = false;
+            nextCommandFromQueue();
         }
+
+        @Override
+        public void onCharacteristicWrite(BluetoothGatt gatt,
+                                         BluetoothGattCharacteristic characteristic,
+                                         int status) {
+            Log.d(TAG, "onCharacteristicWrite: " + characteristic.getUuid());
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
+            }
+            isWriting = false;
+            nextCommandFromQueue();
+        }
+
+
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt,
