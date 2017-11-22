@@ -279,6 +279,8 @@ public class HomeActivity extends Activity {
 
     }
 
+
+
     private void setupButtons() {
 
         /* Setup button click for BLE setup screen */
@@ -330,94 +332,96 @@ public class HomeActivity extends Activity {
 //
                 handler.postDelayed(new Runnable(){
                     public void run(){
+                        getSensorData();
+                        getWeatherData();
                         windowControl();
                         handler.postDelayed(this, delay);
                     }
                 }, delay);
-                RequestQueue queue = Volley.newRequestQueue(HomeActivity.this);
-                String url ="http://aurai-web.herokuapp.com/api/sensorreading/0x0229/?format=json";
-
-                StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                        new Response.Listener<String>() {
-//                            TextView tv = findViewById(R.id.sensor_data_text);
-                            TextView sensorTemp = findViewById(R.id.roomTempHome);
-                            String roomTemperature = sensorTemp.getText().toString();
-                            float roomTempf = Float.parseFloat(roomTemperature);
-                            int roomTemp = Math.round(roomTempf);
-
-
-
-                            @Override
-                            public void onResponse(String response) {
-                                // Display the first 500 characters of the response string.
-//                                tv.setText("Response is: "+ response.substring(0,500));
-                                try {
-                                    JSONArray reader = new JSONArray(response);
-                                    JSONObject sensor = reader.getJSONObject(0);
-                                    roomTemperature = sensor.getString("air_temp");
-                                    roomTempf = Float.parseFloat(roomTemperature);
-                                    roomTemp = Math.round(roomTempf);
-                                    roomTemperature = Integer.toString(roomTemp);
-
-                                }
-                                catch(org.json.JSONException e){
-                                    Log.e(TAG, "Couldn't get weather data.");
-                                }
-
-                                Constants.roomTemp = roomTemp;
-                                sensorTemp.setText(roomTemperature);
-                            }
-                        }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e( TAG ,error.toString());
-                        TextView tv = findViewById(R.id.sensor_data_text);
-                        tv.setText("That didn't work!");
-                    }
-
-                });
-
-                // Add the request to the RequestQueue.
-                queue.add(stringRequest);
-
-                String weather_url = "http://api.openweathermap.org/data/2.5/weather?q=Berkeley&appid=a5c2d2ffd12b150a969a22377d62efa3";
-                StringRequest weather_stringRequest = new StringRequest(Request.Method.GET, weather_url,
-                        new Response.Listener<String>() {
-                            TextView tv = findViewById(R.id.outdoorTempHome);
-                            @Override
-                            public void onResponse(String response) {
-                                Log.d(TAG, response);
-                                String outDoorTemperature = tv.getText().toString();
-                                float outDoorTempf = Float.parseFloat(outDoorTemperature);
-                                int outDoorTemp = Math.round(outDoorTempf);
-
-                                try {
-                                    JSONObject reader = new JSONObject(response);
-                                    JSONObject main = reader.getJSONObject("main");
-                                    outDoorTemperature = main.getString("temp");
-                                    outDoorTempf = Float.parseFloat(outDoorTemperature);
-                                    outDoorTemp = Math.round(outDoorTempf) - 273;
-                                    outDoorTemperature = Integer.toString(outDoorTemp);
-
-                                }
-                                catch(org.json.JSONException e){
-                                    Log.e(TAG, "Couldn't get weather data.");
-                                }
-
-                                Constants.outdoorTemp = outDoorTemp;
-                                tv.setText(outDoorTemperature);
-                            }
-                        }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e( TAG ,error.toString());
-                    }
-
-                });
-
-                queue.add(weather_stringRequest);
+//                RequestQueue queue = Volley.newRequestQueue(HomeActivity.this);
+//                String url ="http://aurai-web.herokuapp.com/api/sensorreading/0x0229/?format=json";
+//
+//                StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+//                        new Response.Listener<String>() {
+////                            TextView tv = findViewById(R.id.sensor_data_text);
+//                            TextView sensorTemp = findViewById(R.id.roomTempHome);
+//                            String roomTemperature = sensorTemp.getText().toString();
+//                            float roomTempf = Float.parseFloat(roomTemperature);
+//                            int roomTemp = Math.round(roomTempf);
+//
+//
+//
+//                            @Override
+//                            public void onResponse(String response) {
+//                                // Display the first 500 characters of the response string.
+////                                tv.setText("Response is: "+ response.substring(0,500));
+//                                try {
+//                                    JSONArray reader = new JSONArray(response);
+//                                    JSONObject sensor = reader.getJSONObject(0);
+//                                    roomTemperature = sensor.getString("air_temp");
+//                                    roomTempf = Float.parseFloat(roomTemperature);
+//                                    roomTemp = Math.round(roomTempf);
+//                                    roomTemperature = Integer.toString(roomTemp);
+//
+//                                }
+//                                catch(org.json.JSONException e){
+//                                    Log.e(TAG, "Couldn't get weather data.");
+//                                }
+//
+//                                Constants.roomTemp = roomTemp;
+//                                sensorTemp.setText(roomTemperature);
+//                            }
+//                        }, new Response.ErrorListener() {
+//
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        Log.e( TAG ,error.toString());
+//                        TextView tv = findViewById(R.id.sensor_data_text);
+//                        tv.setText("That didn't work!");
+//                    }
+//
+//                });
+//
+//                // Add the request to the RequestQueue.
+//                queue.add(stringRequest);
+//
+//                String weather_url = "http://api.openweathermap.org/data/2.5/weather?q=Berkeley&appid=a5c2d2ffd12b150a969a22377d62efa3";
+//                StringRequest weather_stringRequest = new StringRequest(Request.Method.GET, weather_url,
+//                        new Response.Listener<String>() {
+//                            TextView tv = findViewById(R.id.outdoorTempHome);
+//                            @Override
+//                            public void onResponse(String response) {
+//                                Log.d(TAG, response);
+//                                String outDoorTemperature = tv.getText().toString();
+//                                float outDoorTempf = Float.parseFloat(outDoorTemperature);
+//                                int outDoorTemp = Math.round(outDoorTempf);
+//
+//                                try {
+//                                    JSONObject reader = new JSONObject(response);
+//                                    JSONObject main = reader.getJSONObject("main");
+//                                    outDoorTemperature = main.getString("temp");
+//                                    outDoorTempf = Float.parseFloat(outDoorTemperature);
+//                                    outDoorTemp = Math.round(outDoorTempf) - 273;
+//                                    outDoorTemperature = Integer.toString(outDoorTemp);
+//
+//                                }
+//                                catch(org.json.JSONException e){
+//                                    Log.e(TAG, "Couldn't get weather data.");
+//                                }
+//
+//                                Constants.outdoorTemp = outDoorTemp;
+//                                tv.setText(outDoorTemperature);
+//                            }
+//                        }, new Response.ErrorListener() {
+//
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        Log.e( TAG ,error.toString());
+//                    }
+//
+//                });
+//
+//                queue.add(weather_stringRequest);
 
             }
         });
@@ -582,6 +586,95 @@ public class HomeActivity extends Activity {
 
     }
 
+    public void getSensorData(){
+        RequestQueue queue = Volley.newRequestQueue(HomeActivity.this);
+        String url ="http://aurai-web.herokuapp.com/api/sensorreading/0x0229/?format=json";
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    //                            TextView tv = findViewById(R.id.sensor_data_text);
+                    TextView sensorTemp = findViewById(R.id.roomTempHome);
+                    String roomTemperature = sensorTemp.getText().toString();
+                    float roomTempf = Float.parseFloat(roomTemperature);
+                    int roomTemp = Math.round(roomTempf);
+
+
+
+                    @Override
+                    public void onResponse(String response) {
+                        // Display the first 500 characters of the response string.
+//                                tv.setText("Response is: "+ response.substring(0,500));
+                        try {
+                            JSONArray reader = new JSONArray(response);
+                            JSONObject sensor = reader.getJSONObject(0);
+                            roomTemperature = sensor.getString("air_temp");
+                            roomTempf = Float.parseFloat(roomTemperature);
+                            roomTemp = Math.round(roomTempf);
+                            roomTemperature = Integer.toString(roomTemp);
+
+                        }
+                        catch(org.json.JSONException e){
+                            Log.e(TAG, "Couldn't get weather data.");
+                        }
+
+                        Constants.roomTemp = roomTemp;
+                        sensorTemp.setText(roomTemperature);
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e( TAG ,error.toString());
+                TextView tv = findViewById(R.id.sensor_data_text);
+                tv.setText("That didn't work!");
+            }
+
+        });
+
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest);
+    }
+
+    public void getWeatherData(){
+        RequestQueue queue = Volley.newRequestQueue(HomeActivity.this);
+        String weather_url = "http://api.openweathermap.org/data/2.5/weather?q=Berkeley&appid=a5c2d2ffd12b150a969a22377d62efa3";
+        StringRequest weather_stringRequest = new StringRequest(Request.Method.GET, weather_url,
+                new Response.Listener<String>() {
+                    TextView tv = findViewById(R.id.outdoorTempHome);
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, response);
+                        String outDoorTemperature = tv.getText().toString();
+                        float outDoorTempf = Float.parseFloat(outDoorTemperature);
+                        int outDoorTemp = Math.round(outDoorTempf);
+
+                        try {
+                            JSONObject reader = new JSONObject(response);
+                            JSONObject main = reader.getJSONObject("main");
+                            outDoorTemperature = main.getString("temp");
+                            outDoorTempf = Float.parseFloat(outDoorTemperature);
+                            outDoorTemp = Math.round(outDoorTempf) - 273;
+                            outDoorTemperature = Integer.toString(outDoorTemp);
+
+                        }
+                        catch(org.json.JSONException e){
+                            Log.e(TAG, "Couldn't get weather data.");
+                        }
+
+                        Constants.outdoorTemp = outDoorTemp;
+                        tv.setText(outDoorTemperature);
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e( TAG ,error.toString());
+            }
+
+        });
+
+        queue.add(weather_stringRequest);
+    }
     public void windowControl(){
         int roomTemp = Constants.roomTemp;
         int outdoorTemp = Constants.outdoorTemp;
