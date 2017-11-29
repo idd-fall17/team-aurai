@@ -31,9 +31,11 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -84,6 +86,16 @@ public class HomeActivity extends Activity {
     Handler handler = new Handler();
     int delay = 15000; //milliseconds
 
+    //handler runnable
+    Runnable r = new Runnable() {
+        public void run(){
+            getSensorData();
+            getWeatherData();
+            windowControl();
+            handler.postDelayed(this, delay);
+        }
+    };
+
     //setup broadcast receiver to tell when bluetooth connection is gained and lost
     //this will then be used to change the bluetooth icon color
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -122,12 +134,12 @@ public class HomeActivity extends Activity {
         setContentView(R.layout.homelayout);
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
-        DisplayMetrics dm = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(dm);
+//        DisplayMetrics dm = new DisplayMetrics();
+//        getWindowManager().getDefaultDisplay().getMetrics(dm);
 
-        Log.d(TAG, "Display height in pixels: "+ dm.heightPixels);
-        Log.d(TAG, "Display width in pixels: "+ dm.widthPixels);
-        Log.d(TAG, "Display density in dpi: "+ dm.densityDpi);
+//        Log.d(TAG, "Display height in pixels: "+ dm.heightPixels);
+//        Log.d(TAG, "Display width in pixels: "+ dm.widthPixels);
+//        Log.d(TAG, "Display density in dpi: "+ dm.densityDpi);
 
 
         //register to receive messages
@@ -160,7 +172,7 @@ public class HomeActivity extends Activity {
 
         //setup buttons onclick listeners
         setupButtons();
-
+        setupSwitch();
 
         //TODO: call to server to get stored setpoint temperature for the room and load it into the button text
 
@@ -330,14 +342,11 @@ public class HomeActivity extends Activity {
             @Override
             public void onClick(View view) {
 //
-                handler.postDelayed(new Runnable(){
-                    public void run(){
-                        getSensorData();
-                        getWeatherData();
-                        windowControl();
-                        handler.postDelayed(this, delay);
-                    }
-                }, delay);
+                handler.postDelayed(r, delay);
+                Switch s = findViewById(R.id.handlerSwitch);
+                //turn switch on programatically
+                s.setChecked(true);
+
 //                RequestQueue queue = Volley.newRequestQueue(HomeActivity.this);
 //                String url ="http://aurai-web.herokuapp.com/api/sensorreading/0x0229/?format=json";
 //
@@ -625,8 +634,8 @@ public class HomeActivity extends Activity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e( TAG ,error.toString());
-                TextView tv = findViewById(R.id.sensor_data_text);
-                tv.setText("That didn't work!");
+                //TextView tv = findViewById(R.id.sensor_data_text);
+                //tv.setText("That didn't work!");
             }
 
         });
@@ -855,8 +864,8 @@ public class HomeActivity extends Activity {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 //TODO: uncomment line below
                 //send bluetooth characteristic
-                //writeCharacteristic(Constants.seekBarSetPoint);
-
+                writeCharacteristic(Constants.seekBarSetPoint);
+                writeWindowSetpoint(Constants.seekBarSetPoint);
 
 
                 
@@ -877,6 +886,26 @@ public class HomeActivity extends Activity {
         seekBarPercent.setVisibility(View.INVISIBLE);
     }
 
+    /**
+     * Sets up the switch to turn the handler on and off
+     */
+    public void setupSwitch() {
+        Switch s = findViewById(R.id.handlerSwitch);
+
+        s.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                Log.d(TAG, "state changed to: " + Boolean.toString(b));
+
+                if (b == true) {
+                    handler.postDelayed(r, delay);
+                }
+                else {
+                    handler.removeCallbacks(r);
+                }
+            }
+        });
+    }
 
 
 
