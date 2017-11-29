@@ -621,6 +621,7 @@ public class HomeActivity extends Activity {
                             roomTemp = Math.round(roomTempf);
                             roomTemperature = Integer.toString(roomTemp);
 
+
                         }
                         catch(org.json.JSONException e){
                             Log.e(TAG, "Couldn't get weather data.");
@@ -664,6 +665,15 @@ public class HomeActivity extends Activity {
                             outDoorTempf = Float.parseFloat(outDoorTemperature);
                             outDoorTemp = Math.round(outDoorTempf) - 273;
                             outDoorTemperature = Integer.toString(outDoorTemp);
+
+                            JSONArray weather = reader.getJSONArray("weather");
+                            JSONObject main2 = weather.getJSONObject(0);
+
+                            String weatherType = main2.getString("main");
+
+                            setWeatherType(weatherType);
+
+
 
                         }
                         catch(org.json.JSONException e){
@@ -905,6 +915,58 @@ public class HomeActivity extends Activity {
                 }
             }
         });
+    }
+
+    /**
+     * Takes string of weather type from weather API and changes the image of the outside weather
+     * type on the pico
+     * @param type weather type as a string
+     */
+    public void setWeatherType(String type){
+        Log.d(TAG, "setting weather type");
+        Log.d(TAG, "weather type " + type);
+
+        switch (type) {
+            case "Clear": {
+                //way to adjust the weather image type after data has come in
+                Drawable weatherImage = ResourcesCompat.getDrawable(getResources(), R.drawable.sunny, null);
+                weatherTypeImage = (ImageView) findViewById(R.id.weatherTypeImageHome);
+                weatherTypeImage.setImageDrawable(weatherImage);
+
+                break;
+            }
+
+
+            case "Rain": {
+                //way to adjust the weather image type after data has come in
+                Drawable weatherImage = ResourcesCompat.getDrawable(getResources(), R.drawable.rain_cloud, null);
+                weatherTypeImage = (ImageView) findViewById(R.id.weatherTypeImageHome);
+                weatherTypeImage.setImageDrawable(weatherImage);
+
+                break;
+            }
+
+            case "Clouds": {
+                //way to adjust the weather image type after data has come in
+                Drawable weatherImage = ResourcesCompat.getDrawable(getResources(), R.drawable.cloudy, null);
+                weatherTypeImage = (ImageView) findViewById(R.id.weatherTypeImageHome);
+                weatherTypeImage.setImageDrawable(weatherImage);
+
+                break;
+            }
+
+
+            default: {
+                //way to adjust the weather image type after data has come in
+                Drawable weatherImage = ResourcesCompat.getDrawable(getResources(), R.drawable.partly_cloudy, null);
+                weatherTypeImage = (ImageView) findViewById(R.id.weatherTypeImageHome);
+                weatherTypeImage.setImageDrawable(weatherImage);
+
+                break;
+            }
+
+        }
+
     }
 
 
