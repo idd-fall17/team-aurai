@@ -671,6 +671,8 @@ public class HomeActivity extends Activity {
 
                             String weatherType = main2.getString("main");
 
+                            //set in constants to be used for other activities on load
+                            Constants.weatherTypeString = weatherType;
                             setWeatherType(weatherType);
 
 
@@ -872,7 +874,6 @@ public class HomeActivity extends Activity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                //TODO: uncomment line below
                 //send bluetooth characteristic
                 writeCharacteristic(Constants.seekBarSetPoint);
                 writeWindowSetpoint(Constants.seekBarSetPoint);
@@ -882,7 +883,6 @@ public class HomeActivity extends Activity {
                 //TODO: pop up view saying the window is being moved
 
 
-                //TODO: if time make timeout rather than invisible right away
                 //hide once done changing
                 seekBar.setVisibility(View.INVISIBLE);
                 seekBarPercent.setVisibility(View.INVISIBLE);

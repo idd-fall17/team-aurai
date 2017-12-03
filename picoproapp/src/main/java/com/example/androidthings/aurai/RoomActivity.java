@@ -7,14 +7,17 @@ import android.bluetooth.BluetoothGattServer;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeAdvertiser;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -34,6 +37,10 @@ public class RoomActivity extends Activity {
     private Button seekBarPercentButton;
     //private TextView seekBarPercent;
     //private int seekBarSetPoint = 0;
+
+    //weather type image view
+    private ImageView weatherTypeImage;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,7 +74,9 @@ public class RoomActivity extends Activity {
         String roomTemperature = Integer.toString(Constants.roomTemp);
         roomTempTV.setText(roomTemperature);
 
-
+        //get weather type image view and set it to what outside is
+        weatherTypeImage = findViewById(R.id.weatherTypeImageRoom);
+        setWeatherType(Constants.weatherTypeString);
 
     }
 
@@ -96,9 +105,9 @@ public class RoomActivity extends Activity {
                 //set to open point
                 Constants.seekBarSetPoint = 100;
 
-                //TODO: uncomment line below
                 //send bluetooth characteristic
                 //writeCharacteristic(Constants.seekBarSetPoint);
+                writeWindowSetpoint(Constants.seekBarSetPoint);
 
 
                 //set to previous percentage - may have changed from bluetooth call from feather
@@ -125,11 +134,9 @@ public class RoomActivity extends Activity {
                 //set to close point
                 Constants.seekBarSetPoint = 0;
 
-
-                //TODO: uncomment line below
                 //send bluetooth characteristic
                 //writeCharacteristic(Constants.seekBarSetPoint);
-
+                writeWindowSetpoint(Constants.seekBarSetPoint);
 
                 //set to previous percentage - may have changed from bluetooth call from feather
                 seekBarPercentButton.setText(Integer.toString(Constants.seekBarSetPoint)+ "%");
@@ -183,14 +190,8 @@ public class RoomActivity extends Activity {
      * for when the seek bar is moved.
      */
     private void setupSeekBar() {
-//        seekBarPercent = findViewById(R.id.windowPercent);
         //set to startup value
         seekBarPercentButton.setText(Integer.toString(Constants.seekBarSetPoint)+ "%");
-
-
-        //TODO: if time customize the color of the seekbar to be more noticeable
-
-
 
         seekBar = findViewById(R.id.windowSeekRoom);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -209,11 +210,14 @@ public class RoomActivity extends Activity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
 
-                //TODO: send bluetooth characteristic
+
                 //TODO: pop up view saying the window is being moved
 
 
-                //TODO: if time make timeout rather than invisible right away
+               //write to bluetooth
+                writeWindowSetpoint(Constants.seekBarSetPoint);
+
+
                 //hide once done changing
                 seekBar.setVisibility(View.INVISIBLE);
 
@@ -294,6 +298,93 @@ public class RoomActivity extends Activity {
         boolean status = mBluetoothGatt.writeCharacteristic(charac);
         return status;
 
+    }
+
+    /**
+     * Takes string of weather type from weather API and changes the image of the outside weather
+     * type on the pico
+     * @param type weather type as a string
+     */
+    public void setWeatherType(String type) {
+        Log.d(TAG, "setting weather type");
+        Log.d(TAG, "weather type " + type);
+
+        switch (type) {
+            case "Clear": {
+                //way to adjust the weather image type after data has come in
+                Drawable weatherImage = ResourcesCompat.getDrawable(getResources(), R.drawable.sunny, null);
+
+                weatherTypeImage.setImageDrawable(weatherImage);
+
+                break;
+            }
+
+
+            case "Rain": {
+                //way to adjust the weather image type after data has come in
+                Drawable weatherImage = ResourcesCompat.getDrawable(getResources(), R.drawable.rain_cloud, null);
+
+                weatherTypeImage.setImageDrawable(weatherImage);
+
+                break;
+            }
+
+            case "Clouds": {
+                //way to adjust the weather image type after data has come in
+                Drawable weatherImage = ResourcesCompat.getDrawable(getResources(), R.drawable.cloudy, null);
+
+                weatherTypeImage.setImageDrawable(weatherImage);
+
+                break;
+            }
+
+
+            default: {
+                //way to adjust the weather image type after data has come in
+                Drawable weatherImage = ResourcesCompat.getDrawable(getResources(), R.drawable.partly_cloudy, null);
+
+                weatherTypeImage.setImageDrawable(weatherImage);
+
+                break;
+            }
+
+        }
+    }
+
+    public static boolean writeWindowSetpoint(int window_setpoint){
+        BluetoothGatt mBluetoothGatt = Constants.getmBluetoothLeService().getmBluetoothGatt();
+
+        //check mBluetoothGatt is available
+        if (mBluetoothGatt == null) {
+            Log.e(TAG, "lost connection - bluetooth GATT is null in writeWindowSetpoint()");
+            return false;
+        }
+
+        List<BluetoothGattService> list = Constants.getmBluetoothLeService().getSupportedGattServices();
+        Log.d(TAG, list.toString());
+
+        BluetoothGattService customService = null;
+        customService = mBluetoothGatt.getService(Constants.CUSTOM_SERVICE);
+
+        if (customService == null) {
+            Log.e(TAG, "service not found!");
+            return false;
+        }
+
+        BluetoothGattCharacteristic charac = customService.getCharacteristic(Constants.POSITION);
+        if (charac == null) {
+            Log.e(TAG, "position setpoint characteristic not found!");
+            return false;
+        }
+
+        mBluetoothGatt.setCharacteristicNotification(charac, true);
+
+        byte[] value =  Integer.toHexString(window_setpoint).getBytes();
+        charac.setValue(window_setpoint, BluetoothGattCharacteristic.FORMAT_UINT32, 0);
+
+        boolean status = mBluetoothGatt.writeCharacteristic(charac);
+//        mBluetoothGatt.setCharacteristicNotification(charac, false);
+        return status;
     }
 
 }

@@ -50,7 +50,9 @@ public class Constants {
     //current room temp that is displayed
     public static int roomTemp = 0;
 
-    //outdoor weather types - //TODO: make names the png images to be used on the screen
+    //outdoor weather types
+    //string used to update the image on each of the strings
+    public static String weatherTypeString = "Clear";
     final public static String RAIN = "rain_cloud.png";
     final public static String CLOUDY = "cloudy";
     final public static String PARTLY_CLOUDY = "partly_cloudy";

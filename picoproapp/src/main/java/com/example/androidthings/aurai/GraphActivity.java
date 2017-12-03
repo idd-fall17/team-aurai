@@ -2,23 +2,28 @@ package com.example.androidthings.aurai;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.EntryXComparator;
 
@@ -26,6 +31,7 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -45,6 +51,9 @@ public class GraphActivity extends Activity {
     private float[] roomTempData;
     private float[] setpointTempData;
     private float[] outdoorTempData;
+
+    //weather type image view
+    private ImageView weatherTypeImage;
 
 
     //open source chart library to use to create graphs
@@ -90,6 +99,8 @@ public class GraphActivity extends Activity {
         String roomTemperature = Integer.toString(Constants.roomTemp);
         roomTempButton.setText(roomTemperature);
 
+        weatherTypeImage = findViewById(R.id.weatherTypeImageGraph);
+        setWeatherType(Constants.weatherTypeString);
     }
 
 
@@ -166,9 +177,13 @@ public class GraphActivity extends Activity {
         chart.getAxisRight().setDrawLabels(false);
         chart.getAxisRight().setDrawLimitLinesBehindData(false);
         chart.getAxisLeft().setDrawLimitLinesBehindData(false);
+        chart.getAxisLeft().setTextSize(16);
+        chart.getAxisLeft().setTextColor(Color.WHITE);
         chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
         chart.getXAxis().setDrawLimitLinesBehindData(false);
         chart.getXAxis().setDrawLabels(true);
+        chart.getXAxis().setTextSize(16);
+        chart.getXAxis().setTextSize(Color.WHITE);
 //        chart.setDescription(new Description(""));
 //        chart.setDescription("");
         chart.setDrawBorders(true);
@@ -177,12 +192,14 @@ public class GraphActivity extends Activity {
         chart.setBorderColor(Color.WHITE);
         
 
-        //placeholder data to test chart
-        int[] x = new int[]{1,2,3,4,5,6,7,8,9};
-        int[] y = new int[]{1,2,3,4,5,6,7,8,9};
 
-        int[] x2 = new int[]{9,8,7,6,5,4,3,2,1};
-        int[] y2 = new int[]{1,2,3,4,5,6,7,8,9};
+
+        //placeholder data to test chart
+        int[] x = new int[]{1,2,3,4,5,6,7};
+        int[] y = new int[]{15, 16, 16, 14, 13, 10, 8};
+
+        int[] x2 = new int[]{1,2,3,4,5,6,7};
+        int[] y2 = new int[]{20,20,20,20,18,18,18};
 
 
         List<Entry> chartEntries1 = new ArrayList<Entry>();
@@ -190,6 +207,7 @@ public class GraphActivity extends Activity {
 
 
         for (int i = 0; i < x.length; i++) {
+
             chartEntries1.add(new Entry(x[i], y[i]));
             chartEntries2.add(new Entry(x2[i], y2[i]));
         }
@@ -197,13 +215,14 @@ public class GraphActivity extends Activity {
         Collections.sort(chartEntries1, new EntryXComparator());
         Collections.sort(chartEntries2, new EntryXComparator());
 
-        chartData = new LineDataSet(chartEntries1, "dataset1");
+
+        chartData = new LineDataSet(chartEntries1, "Outdoor Temperature");
         chartData.setAxisDependency(YAxis.AxisDependency.LEFT);
         chartData.setDrawValues(false);
         chartData.setColor(Color.RED);
         chartData.setCircleColor(Color.RED);
 
-        LineDataSet chartData2 = new LineDataSet(chartEntries2, "dataset2");
+        LineDataSet chartData2 = new LineDataSet(chartEntries2, "Setpoint Temperature");
         chartData2.setAxisDependency(YAxis.AxisDependency.LEFT);
         chartData2.setDrawValues(false);
 
@@ -211,6 +230,32 @@ public class GraphActivity extends Activity {
         List<ILineDataSet> dataSets = new ArrayList<ILineDataSet>();
         dataSets.add(chartData);
         dataSets.add(chartData2);
+
+
+        //set x-axis labels
+        final HashMap<Integer, String> xLabel = new HashMap<>();
+        xLabel.put(1, "2pm");
+        xLabel.put(2, "4pm");
+        xLabel.put(3, "6pm");
+        xLabel.put(4, "8pm");
+        xLabel.put(5, "10pm");
+        xLabel.put(6, "12am");
+        xLabel.put(7, "2am");
+
+        XAxis xAxis = chart.getXAxis();
+
+        xAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return xLabel.get((int)value);
+            }
+
+
+
+        });
+
+
+
 
         LineData data = new LineData(dataSets);
         chart.setData(data);
@@ -232,6 +277,53 @@ public class GraphActivity extends Activity {
 
         //refreshes the chart
         chart.invalidate();
+    }
+
+    /**
+     * Takes string of weather type from weather API and changes the image of the outside weather
+     * type on the pico
+     * @param type weather type as a string
+     */
+    public void setWeatherType(String type) {
+        Log.d(TAG, "setting weather type");
+        Log.d(TAG, "weather type " + type);
+
+        switch (type) {
+            case "Clear": {
+                //way to adjust the weather image type after data has come in
+                Drawable weatherImage = ResourcesCompat.getDrawable(getResources(), R.drawable.sunny, null);
+                weatherTypeImage.setImageDrawable(weatherImage);
+
+                break;
+            }
+
+
+            case "Rain": {
+                //way to adjust the weather image type after data has come in
+                Drawable weatherImage = ResourcesCompat.getDrawable(getResources(), R.drawable.rain_cloud, null);
+                weatherTypeImage.setImageDrawable(weatherImage);
+
+                break;
+            }
+
+            case "Clouds": {
+                //way to adjust the weather image type after data has come in
+                Drawable weatherImage = ResourcesCompat.getDrawable(getResources(), R.drawable.cloudy, null);
+                weatherTypeImage.setImageDrawable(weatherImage);
+
+                break;
+            }
+
+
+            default: {
+                //way to adjust the weather image type after data has come in
+                Drawable weatherImage = ResourcesCompat.getDrawable(getResources(), R.drawable.partly_cloudy, null);
+                weatherTypeImage.setImageDrawable(weatherImage);
+
+                break;
+            }
+
+        }
     }
 
 }
