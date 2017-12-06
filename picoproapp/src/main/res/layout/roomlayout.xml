@@ -185,4 +185,20 @@
         app:layout_constraintTop_toTopOf="@+id/roomView"
         app:layout_constraintVertical_bias="0.38" />
 
+    <TextView
+        android:id="@+id/windowMovingRoom"
+        android:layout_width="800dp"
+        android:layout_height="50dp"
+        android:background="@android:color/holo_red_dark"
+        android:gravity="center"
+        android:text="Window Moving...."
+        android:textAlignment="center"
+        android:textColor="@color/cardview_light_background"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 </android.support.constraint.ConstraintLayout>

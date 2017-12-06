@@ -30,6 +30,9 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
@@ -95,6 +98,14 @@ public class HomeActivity extends Activity {
             handler.postDelayed(this, delay);
         }
     };
+
+
+    //text view that appears when the window is moving
+    private TextView windowMovingTV;
+    Animation fadeIn;
+    Animation fadeOut;
+    int fadeCount = 0;
+
 
     //setup broadcast receiver to tell when bluetooth connection is gained and lost
     //this will then be used to change the bluetooth icon color
@@ -174,17 +185,19 @@ public class HomeActivity extends Activity {
         setupButtons();
         setupSwitch();
 
-        //TODO: call to server to get stored setpoint temperature for the room and load it into the button text
-
-
         //hide setpoint adjustment on launch
         upSetButton.setVisibility(View.INVISIBLE);
         downSetButton.setVisibility(View.INVISIBLE);
         settingTemp = false;
 
+        //get the window moving text view and hide it
+        windowMovingTV = findViewById(R.id.WindowMoving);
+        windowMovingTV.setAlpha(0.0f);
+        //windowMovingTV.setVisibility(View.INVISIBLE);
 
         //set up the seek bar
         setupSeekBar();
+        setupAnimations();
 
         //get previous set point temp if stored
         SharedPreferences preferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
@@ -756,7 +769,14 @@ public class HomeActivity extends Activity {
     }
 
     public static boolean writeWindowSetpoint(int window_setpoint){
-        BluetoothGatt mBluetoothGatt = Constants.getmBluetoothLeService().getmBluetoothGatt();
+        BluetoothGatt mBluetoothGatt;
+
+        try {
+            mBluetoothGatt = Constants.getmBluetoothLeService().getmBluetoothGatt();
+        } catch (Exception e) {
+            return false;
+        }
+
 
         //check mBluetoothGatt is available
         if (mBluetoothGatt == null) {
@@ -853,11 +873,6 @@ public class HomeActivity extends Activity {
         //set to startup value
         seekBarPercent.setText(Integer.toString(Constants.seekBarSetPoint)+ "%");
 
-
-        //TODO: if time customize the color of the seekbar to be more noticeable
-
-
-
         seekBar = findViewById(R.id.windowSeek);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -874,14 +889,13 @@ public class HomeActivity extends Activity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
+
+                //start fade in and the rest of the animation will trigger
+                windowMovingTV.startAnimation(fadeIn);
+
                 //send bluetooth characteristic
-                writeCharacteristic(Constants.seekBarSetPoint);
+                //writeCharacteristic(Constants.seekBarSetPoint);
                 writeWindowSetpoint(Constants.seekBarSetPoint);
-
-
-                
-                //TODO: pop up view saying the window is being moved
-
 
                 //hide once done changing
                 seekBar.setVisibility(View.INVISIBLE);
@@ -1192,5 +1206,68 @@ public class HomeActivity extends Activity {
 //            }
         }
     };
+
+
+    /**
+     * Sets up the animations and listeners for the moving window text view to fade in and out
+     */
+    public void setupAnimations() {
+        //make moving window appear and disappear
+        //windowMovingTV.setAlpha(1.0f);
+
+
+        fadeIn = new AlphaAnimation(0.0f, 1.0f);
+        fadeIn.setDuration(1000);
+        fadeIn.setFillAfter(true);
+
+        fadeIn.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                windowMovingTV.setAlpha(1.0f);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                windowMovingTV.startAnimation(fadeOut);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+
+        fadeOut = new AlphaAnimation(1.0f, 0.0f);
+        fadeOut.setDuration(1000);
+        fadeOut.setStartOffset(100);
+
+        fadeOut.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                if (fadeCount < 4) {
+                    fadeCount++;
+                    windowMovingTV.startAnimation(fadeIn);
+                }
+                else if (fadeCount == 4) {
+                    //reset animation for next time
+                    fadeCount = 0;
+                    windowMovingTV.setAlpha(0.0f);
+                }
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+
+    }
 
 }

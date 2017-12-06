@@ -15,6 +15,8 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -30,6 +32,12 @@ import java.util.List;
 public class RoomActivity extends Activity {
     private static final String TAG = HomeActivity.class.getSimpleName();
 
+
+    //text view that appears when the window is moving
+    private TextView windowMovingTV;
+    Animation fadeIn;
+    Animation fadeOut;
+    int fadeCount = 0;
 
 
     //seek bar for window position
@@ -78,6 +86,10 @@ public class RoomActivity extends Activity {
         weatherTypeImage = findViewById(R.id.weatherTypeImageRoom);
         setWeatherType(Constants.weatherTypeString);
 
+        windowMovingTV = findViewById(R.id.windowMovingRoom);
+        windowMovingTV.setAlpha(0.0f);
+        setupAnimations();
+
     }
 
 
@@ -105,6 +117,9 @@ public class RoomActivity extends Activity {
                 //set to open point
                 Constants.seekBarSetPoint = 100;
 
+                //animate pop up on screen
+                windowMovingTV.startAnimation(fadeIn);
+
                 //send bluetooth characteristic
                 //writeCharacteristic(Constants.seekBarSetPoint);
                 writeWindowSetpoint(Constants.seekBarSetPoint);
@@ -117,11 +132,6 @@ public class RoomActivity extends Activity {
                 int seekLocation = Constants.seekBarSetPoint/10;
                 seekBar.setProgress(seekLocation);
                 seekBar.setVisibility(View.INVISIBLE);
-
-
-                //TODO: show progress on screen of windows opening
-
-
             }
 
         });
@@ -134,6 +144,9 @@ public class RoomActivity extends Activity {
                 //set to close point
                 Constants.seekBarSetPoint = 0;
 
+                //animate pop up on screen
+                windowMovingTV.startAnimation(fadeIn);
+
                 //send bluetooth characteristic
                 //writeCharacteristic(Constants.seekBarSetPoint);
                 writeWindowSetpoint(Constants.seekBarSetPoint);
@@ -145,9 +158,6 @@ public class RoomActivity extends Activity {
                 int seekLocation = Constants.seekBarSetPoint/10;
                 seekBar.setProgress(seekLocation);
                 seekBar.setVisibility(View.INVISIBLE);
-
-
-                //TODO: show progress on screen of windows opening
 
             }
 
@@ -210,8 +220,8 @@ public class RoomActivity extends Activity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
 
-
-                //TODO: pop up view saying the window is being moved
+                //start animation -- auto counts and loops fade in listeners below
+                windowMovingTV.startAnimation(fadeIn);
 
 
                //write to bluetooth
@@ -352,7 +362,13 @@ public class RoomActivity extends Activity {
     }
 
     public static boolean writeWindowSetpoint(int window_setpoint){
-        BluetoothGatt mBluetoothGatt = Constants.getmBluetoothLeService().getmBluetoothGatt();
+        BluetoothGatt mBluetoothGatt;
+
+        try {
+            mBluetoothGatt = Constants.getmBluetoothLeService().getmBluetoothGatt();
+        } catch (Exception e) {
+            return false;
+        }
 
         //check mBluetoothGatt is available
         if (mBluetoothGatt == null) {
@@ -387,4 +403,66 @@ public class RoomActivity extends Activity {
         return status;
     }
 
+
+    /**
+     * Sets up the animations and listeners for the moving window text view to fade in and out
+     */
+    public void setupAnimations() {
+        //make moving window appear and disappear
+        //windowMovingTV.setAlpha(1.0f);
+
+
+        fadeIn = new AlphaAnimation(0.0f, 1.0f);
+        fadeIn.setDuration(1000);
+        fadeIn.setFillAfter(true);
+
+        fadeIn.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                windowMovingTV.setAlpha(1.0f);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                windowMovingTV.startAnimation(fadeOut);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+
+        fadeOut = new AlphaAnimation(1.0f, 0.0f);
+        fadeOut.setDuration(1000);
+        fadeOut.setStartOffset(100);
+
+        fadeOut.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                if (fadeCount < 4) {
+                    fadeCount++;
+                    windowMovingTV.startAnimation(fadeIn);
+                }
+                else if (fadeCount == 4) {
+                    //reset animation for next time
+                    fadeCount = 0;
+                    windowMovingTV.setAlpha(0.0f);
+                }
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+
+    }
 }
